@@ -6,13 +6,13 @@ from fastf1 import utils
 from matplotlib import pyplot as plt
 from scipy import interpolate
 
-ff1.utils.enable_cache(
-    r'C:\Users\Dell\PycharmProjects\pyF1_Analysis\path\to\folder\for\cache')  # optional but recommended
+# ff1.utils.enable_cache(
+#     r'C:\Users\Dell\PycharmProjects\pyF1_Analysis\path\to\folder\for\cache')  # optional but recommended
 
 
 def crate_event(year, gp, session):
     quali = ff1.get_session(year, gp, session)
-    laps = quali.load_laps()
+    laps = quali.load_laps(with_telemetry=True, livedata=None)
 
     return laps
 
@@ -21,10 +21,10 @@ def overlay_drv(drv1, drv2):
     fig, ax = plt.subplots(2)
     fig.canvas.set_window_title("".join(('Driver overlay: ', drv1.Driver, ' vs ', drv2.Driver)))
     fig.suptitle("".join((drv1.Driver, ' vs. ', drv2.Driver)))
-    ax[0].plot(drv1.telemetry['Space'], drv1.telemetry['Speed'],
+    ax[0].plot(drv1.telemetry['Distance'], drv1.telemetry['Speed'],
                color=plotting.TEAM_COLORS[drv1['Team']],
                label="".join((drv1.Driver, ' ', str(drv1.LapTime).split(':', 1)[1][:-3])))
-    ax[0].plot(drv2.telemetry['Space'], drv2.telemetry['Speed'],
+    ax[0].plot(drv2.telemetry['Distance'], drv2.telemetry['Speed'],
                color=plotting.TEAM_COLORS[drv2['Team']],
                label="".join((drv2.Driver, ' ', str(drv2.LapTime).split(':', 1)[1][:-3])))
     legend_x = 1.1
@@ -35,7 +35,8 @@ def overlay_drv(drv1, drv2):
                  ncol=2)
     ax[0].set_xlabel('Lap Distance [m]')
     ax[0].set_ylabel('Velocity [kmh]')
-    ax[1].plot(drv2.telemetry['Space'], utils.delta_time(drv2, drv1),
+    delta,ref_tel,dump2 = utils.delta_time(drv2, drv1)
+    ax[1].plot(ref_tel['Distance'], delta,
                '--', color=plotting.TEAM_COLORS[drv1['Team']])
     ax[1].set_xlabel('Lap Distance [m]')
     ax[1].set_ylabel("".join(('Relative time delta\n(', drv1.Driver, ' to ', drv2.Driver, ')')))
@@ -52,10 +53,10 @@ def overlay_drivers(driver_list, session):
 
 
 def index(drv):
-    index0 = drv.telemetry['Space'].index[0]
-    space0 = drv.telemetry['Space'].loc[index0]
-    index_end = drv.telemetry['Space'].index[-1]
-    space_end = drv.telemetry['Space'].loc[index_end]
+    index0 = drv.telemetry['Distance'].index[0]
+    space0 = drv.telemetry['Distance'].loc[index0]
+    index_end = drv.telemetry['Distance'].index[-1]
+    space_end = drv.telemetry['Distance'].loc[index_end]
 
     return index0, index_end, space0, space_end
 
@@ -71,8 +72,8 @@ def index_multi(drvs):
     size = len(drvs)
     output = np.empty((2, size))
     for i in range(size):
-        output[0][i] = drvs[i].telemetry['Space'].index[0]
-        output[1][i] = drvs[i].telemetry['Space'].index[-1]
+        output[0][i] = drvs[i].telemetry['Distance'].index[0]
+        output[1][i] = drvs[i].telemetry['Distance'].index[-1]
     idx = pd.DataFrame({'Index zero': output[0][:],
                         'Index omega': output[1][:]},
                        index=[drvs[value].Driver for value in range(size)])
@@ -93,11 +94,11 @@ def multi_spline(drvs, idx):
     output = [[None] * size for j in range(3)]
 
     for i in range(size):
-        output[0][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver], 'Space',
+        output[0][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver], 'Distance',
                             'Time')
-        output[1][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver], 'Space',
+        output[1][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver], 'Distance',
                             'X')
-        output[2][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver], 'Space',
+        output[2][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver], 'Distance',
                             'Y')
     splns = pd.DataFrame({'Space/Time': output[0][:],
                           'Space/X': output[1][:],
@@ -174,7 +175,7 @@ def overlay_map_multi(driver_list, session):
     drvs = data_list(driver_list, session, 'fastest')
     idx = index_multi(drvs)
     splines = multi_spline(drvs, idx)
-    track_length = max([drvs[i].telemetry['Space'].loc[idx['Index omega'][drvs[i].Driver]] for i in range(len(drvs))])
+    track_length = max([drvs[i].telemetry['Distance'].loc[idx['Index omega'][drvs[i].Driver]] for i in range(len(drvs))])
     segments = [value for value in track_length * (np.arange(sectors + 1)) / sectors]
     segments_time = segment_times(splines, segments, drvs)
     time_differance = fastest_segments(segments_time)
@@ -182,12 +183,12 @@ def overlay_map_multi(driver_list, session):
     overlay_map_plot(drvs, segments, time_differance, splines)
 
 
-def ten_best(driver_list, session):
-    drvs = data_list(driver_list, session, 'all')
-    for i in range(len(drvs)):
-        print(drvs[i].Driver, ' Lap Time:\n', drvs[i].LapTime)
-
-    return 1
+# def ten_best(driver_list, session):
+#     drvs = data_list(driver_list, session, 'all')
+#     for i in range(len(drvs)):
+#         print(drvs[i].Driver, ' Lap Time:\n', drvs[i].LapTime)
+#
+#     return 1
 
 # overlay_drivers(['VER', 'HAM'])
 # overlay_map_multi(['VER', 'HAM', 'LEC'])
