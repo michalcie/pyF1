@@ -5,10 +5,15 @@ from fastf1 import plotting
 from fastf1 import utils
 from matplotlib import pyplot as plt
 from scipy import interpolate
+import os
+plt.style.use('dark_background')
 
+dirname = os.path.dirname(__file__)
+filename = os.path.join(dirname, 'cache')
+print(filename)
 # ff1.utils.enable_cache(
 #     r'C:\Users\Dell\PycharmProjects\pyF1_Analysis\path\to\folder\for\cache')  # optional but recommended
-
+ff1.api.Cache.enable_cache(filename)
 
 def crate_event(year, gp, session):
     quali = ff1.get_session(year, gp, session)
@@ -183,14 +188,186 @@ def overlay_map_multi(driver_list, session):
     overlay_map_plot(drvs, segments, time_differance, splines)
 
 
+def tire_comparison():
+
+    return 0
+
+
+def race_tire_comparison():
+
+    return 0
+
+
+def quali_tire_comparison():
+
+    return 0
+
+
+def tire_degradation():
+
+    return 0
+
+
+def plot_tire_data():
+
+    return 0
+
+
+def plot_driver_tire_data(driver_list, laps):
+    drvs = data_list(driver_list, laps, 'all')
+    # hard = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'HARD', drvs[0]['IsAccurate'] == True)]
+    # medium = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'MEDIUM', drvs[0]['IsAccurate'] == True)]
+    # soft = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'SOFT', drvs[0]['IsAccurate'] == True)]
+    # print(max(pd.unique(drvs[0]['Stint'])))
+    fig, ax = plt.subplots(2)
+    # print(np.unique(drvs[0]['Stint']))
+    for i in range(max(pd.unique(drvs[0]['Stint']))):
+        current_stint = drvs[0].loc[np.logical_and(drvs[0]['Stint'] == i+1, drvs[0]['IsAccurate'] == True)].pick_quicklaps(threshold=1.07)
+        if not current_stint.empty:
+            # print(i+1)
+            # print(min(current_stint['TyreLife']))
+            # print(max(current_stint['TyreLife']))
+            times = current_stint['LapTime'].dt.total_seconds()
+            # print(np.logical_and(current_stint['Compound'] == 'SOFT', 1).all())
+            if np.logical_and(current_stint['Compound'] == 'SOFT', 1).all():
+                color = 'r'
+            elif np.logical_and(current_stint['Compound'] == 'MEDIUM', 1).all():
+                color = 'y'
+            elif np.logical_and(current_stint['Compound'] == 'HARD', 1).all():
+                color = 'w'
+
+            ax[0].plot(current_stint['TyreLife'], times, '.', color=color)
+            lookup = np.polyfit(current_stint['TyreLife'], times,2)
+            x = np.linspace(min(current_stint['TyreLife']), max(current_stint['TyreLife']),100)
+            lookup = np.poly1d(lookup)
+            y = lookup(x)
+            ax[0].plot(x,y,'-',color=color)
+
+            ax[1].plot(current_stint['LapNumber'], times, '.', color=color)
+            lookup = np.polyfit(current_stint['LapNumber'], times,2)
+            x = np.linspace(min(current_stint['LapNumber']), max(current_stint['LapNumber']),100)
+            lookup = np.poly1d(lookup)
+            y = lookup(x)
+            ax[1].plot(x,y,'-',color=color)
+
+    plt.draw()
+
+    # times = soft['LapTime'].dt.total_seconds()
+    # plt.plot(soft['TyreLife'], times, '.')
+    # lookup = np.polyfit(soft['TyreLife'], times,2)
+    # x = np.linspace(min(soft['TyreLife']), max(soft['LapNumber']),100)
+    # lookup = np.poly1d(lookup)
+    # y = lookup(x)
+    # plt.plot(x,y)
+    # plt.show()
+
+
+    return 0
+
+def session_plot(driver_list, laps):
+    fig, ax = plt.subplots()
+    drvs = data_list(driver_list, laps, 'all')
+    y = drvs[0].loc[drvs[0]['IsAccurate'] == True]
+    ax.plot(y['LapNumber'], y['LapTime'].dt.total_seconds())
+
+    lookup = np.polyfit(y['LapNumber'], y['LapTime'].dt.total_seconds(),2)
+    x = np.linspace(min(y['LapNumber']), max(y['LapNumber']),100)
+    lookup = np.poly1d(lookup)
+    y = lookup(x)
+    ax.plot(x,y)
+    plt.show()
+
+def tire_data():
+
+    return 0
+
+
+def tire_by_lap(session):
+    fig, ax = plt.subplots(2)
+
+    medians = []
+    i = 0
+    for element in ["SOFT", "MEDIUM", "HARD"]:
+        tyre = session.pick_tyre(element).pick_accurate().pick_quicklaps(threshold=1.05)
+        x = tyre["LapNumber"]
+        y = tyre["LapTime"].dt.total_seconds()
+        y_avg = pd.to_numeric(tyre['LapTime'].dt.total_seconds()).groupby(tyre['LapNumber'])
+        y_avg = y_avg.mean().to_frame().reset_index(level = 0)
+
+        if element == "SOFT":
+            color = 'r'
+            soft = y_avg.set_index('LapNumber')
+            tire_idx = 1
+
+        elif element == "MEDIUM":
+            color = 'y'
+            medium = y_avg.set_index('LapNumber')
+            tire_idx = 2
+
+        elif element == "HARD":
+            color = 'w'
+            hard = y_avg.set_index('LapNumber')
+            tire_idx = 3
+
+        ax[0].plot(x,y, '.',color = color, alpha = 0.5)
+        ax[0].plot(y_avg["LapNumber"], y_avg["LapTime"], 'o', color = color, alpha = 0.9)
+
+        ax[1].plot(np.random.normal(tire_idx, 0.04, size=len(y)), y, 'o', color = color, alpha = 0.5)
+        bp = ax[1].boxplot(y, positions = [tire_idx])
+        medians.append(max(bp['medians'][0].get_ydata()))
+        ax[1].set_xticks([1,2,3], minor=False)
+        ax[1].set_xticklabels(['SOFT','MEDIUM','HARD'], fontdict=None, minor=False)
+        i = i + 1
+
+    xline = np.linspace(0.8, 3.2, 50)
+    lookup = np.polyfit([1,2,3], medians, 1)
+    lookup = np.poly1d(lookup)
+    yline = lookup(xline)
+    ax[1].plot(xline, yline, 'g', linewidth = 1)
+
+
+    sof_med = medium - soft
+    med_har = hard - medium
+    sof_har = hard - soft
+
+    sof_med_avg = sof_med.median()
+    med_har_avg = med_har.median()
+    sof_har_avg = sof_har.median()
+
+    # isofuel delta - created from upper plot data
+    print('Soft - Medium delta:')
+    print(round(sof_med_avg["LapTime"], 3))
+    print('Medium - Hard delta:')
+    print(round(med_har_avg["LapTime"], 3))
+    print('Soft - Hard delta:')
+    print(round(sof_har_avg["LapTime"], 3))
+
+    plt.grid(which = 'both')
+    plt.show()
+
+
+    # for :
+    #     x = softs["LapNumber"]
+    #     y = softs["LapTime"].dt.total_seconds()
+    #     y_avg = pd.to_numeric(softs['LapTime'].dt.total_seconds()).groupby(softs['LapNumber'])
+    #     y_avg = y_avg.mean().to_frame().reset_index(level = 0)
+    #     ax.plot(x,y,'r.', alpha = 0.5)
+    #     ax.plot(y_avg["LapNumber"], y_avg["LapTime"],'ro', alpha = 1)
+    #
+    #
+    # plt.show()
+
+    return 0
+
+
+# def driver_tire_data(driver_list, laps):
+#     drvs = data_list(driver_list, laps, 'all')
+#     print(drvs[0]['Compound'])
+#     return 0
+
 # def ten_best(driver_list, session):
 #     drvs = data_list(driver_list, session, 'all')
 #     for i in range(len(drvs)):
 #         print(drvs[i].Driver, ' Lap Time:\n', drvs[i].LapTime)
 #
 #     return 1
-
-# overlay_drivers(['VER', 'HAM'])
-# overlay_map_multi(['VER', 'HAM', 'LEC'])
-# plt.show()
-# ff1.utils.clear_cache()
