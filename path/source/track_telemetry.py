@@ -16,10 +16,11 @@ print(filename)
 ff1.api.Cache.enable_cache(filename)
 
 def crate_event(year, gp, session):
-    quali = ff1.get_session(year, gp, session)
-    laps = quali.load_laps(with_telemetry=True, livedata=None)
+    event = ff1.get_session(year, gp, session)
+    print(event.name)
+    laps = event.load_laps(with_telemetry=True, livedata=None)
 
-    return laps
+    return laps, event
 
 
 def overlay_drv(drv1, drv2):
@@ -252,16 +253,6 @@ def plot_driver_tire_data(driver_list, laps):
 
     plt.draw()
 
-    # times = soft['LapTime'].dt.total_seconds()
-    # plt.plot(soft['TyreLife'], times, '.')
-    # lookup = np.polyfit(soft['TyreLife'], times,2)
-    # x = np.linspace(min(soft['TyreLife']), max(soft['LapNumber']),100)
-    # lookup = np.poly1d(lookup)
-    # y = lookup(x)
-    # plt.plot(x,y)
-    # plt.show()
-
-
     return 0
 
 def session_plot(driver_list, laps):
@@ -282,92 +273,88 @@ def tire_data():
     return 0
 
 
-def tire_by_lap(session):
+def tire_by_lap(session, event):
     fig, ax = plt.subplots(2)
-
+    print(event.name)
+    if event.name == 'Qualifying':
+        threshold = 1.01
+    else:
+        threshold = 1.05
     medians = []
     i = 0
     for element in ["SOFT", "MEDIUM", "HARD"]:
-        tyre = session.pick_tyre(element).pick_accurate().pick_quicklaps(threshold=1.05)
-        x = tyre["LapNumber"]
-        y = tyre["LapTime"].dt.total_seconds()
-        y_avg = pd.to_numeric(tyre['LapTime'].dt.total_seconds()).groupby(tyre['LapNumber'])
-        y_avg = y_avg.mean().to_frame().reset_index(level = 0)
+        # tyre = session.pick_tyre(element).pick_accurate().pick_quicklaps(threshold=1.05)
+        tyre = session.pick_tyre(element)
 
-        if element == "SOFT":
-            color = 'r'
-            soft = y_avg.set_index('LapNumber')
-            tire_idx = 1
+        if len(tyre) > 0:
+            tyre = tyre.pick_accurate().pick_quicklaps(threshold=threshold)
+            x = tyre["LapNumber"]
+            y = tyre["LapTime"].dt.total_seconds()
+            y_avg = pd.to_numeric(tyre['LapTime'].dt.total_seconds()).groupby(tyre['LapNumber'])
+            y_avg = y_avg.mean().to_frame().reset_index(level = 0)
 
-        elif element == "MEDIUM":
-            color = 'y'
-            medium = y_avg.set_index('LapNumber')
-            tire_idx = 2
+            if element == "SOFT":
+                color = 'r'
+                soft = y_avg.set_index('LapNumber')
+                tire_idx = 1
 
-        elif element == "HARD":
-            color = 'w'
-            hard = y_avg.set_index('LapNumber')
-            tire_idx = 3
+            elif element == "MEDIUM":
+                color = 'y'
+                medium = y_avg.set_index('LapNumber')
+                tire_idx = 2
 
-        ax[0].plot(x,y, '.',color = color, alpha = 0.5)
-        ax[0].plot(y_avg["LapNumber"], y_avg["LapTime"], 'o', color = color, alpha = 0.9)
+            elif element == "HARD":
+                color = 'w'
+                hard = y_avg.set_index('LapNumber')
+                tire_idx = 3
 
-        ax[1].plot(np.random.normal(tire_idx, 0.04, size=len(y)), y, 'o', color = color, alpha = 0.5)
-        bp = ax[1].boxplot(y, positions = [tire_idx])
-        medians.append(max(bp['medians'][0].get_ydata()))
-        ax[1].set_xticks([1,2,3], minor=False)
-        ax[1].set_xticklabels(['SOFT','MEDIUM','HARD'], fontdict=None, minor=False)
-        i = i + 1
+            ax[0].plot(x,y, '.',color = color, alpha = 0.5)
+            ax[0].plot(y_avg["LapNumber"], y_avg["LapTime"], 'o', color = color, alpha = 0.9)
 
-    xline = np.linspace(0.8, 3.2, 50)
-    lookup = np.polyfit([1,2,3], medians, 1)
-    lookup = np.poly1d(lookup)
-    yline = lookup(xline)
-    ax[1].plot(xline, yline, 'g', linewidth = 1)
+            ax[1].plot(np.random.normal(tire_idx, 0.04, size=len(y)), y, 'o', color = color, alpha = 0.5)
+            bp = ax[1].boxplot(y, positions = [tire_idx])
+            medians.append(max(bp['medians'][0].get_ydata()))
+            ax[1].set_xticks([1,2,3], minor=False)
+            ax[1].set_xticklabels(['SOFT','MEDIUM','HARD'], fontdict=None, minor=False)
+            i = i + 1
 
+    if 'soft' in locals():
+        print('Soft median:', round(soft.median()['LapTime'], 3))
 
-    sof_med = medium - soft
-    med_har = hard - medium
-    sof_har = hard - soft
+    if 'medium' in locals():
+        print('Medium median:', round(medium.median()['LapTime'], 3))
 
-    sof_med_avg = sof_med.median()
-    med_har_avg = med_har.median()
-    sof_har_avg = sof_har.median()
+    if 'hard' in locals():
+        print('Hard median:', round(hard.median()['LapTime'], 3))
 
-    # isofuel delta - created from upper plot data
-    print('Soft - Medium delta:')
-    print(round(sof_med_avg["LapTime"], 3))
-    print('Medium - Hard delta:')
-    print(round(med_har_avg["LapTime"], 3))
-    print('Soft - Hard delta:')
-    print(round(sof_har_avg["LapTime"], 3))
+    print('\033[1m' + 'Isofuel based:' + '\033[0m')
+    if 'soft' in locals() and 'medium' in locals() and 'hard' in locals():
+        xline = np.linspace(0.8, 3.2, 50)
+        lookup = np.polyfit([1,2,3], medians, 1)
+        lookup = np.poly1d(lookup)
+        yline = lookup(xline)
+        ax[1].plot(xline, yline, 'g', linewidth = 1)
+
+        # isofuel delta - created from upper plot data
+    if ('soft' in locals()) and ('medium' in locals()):
+        sof_med = medium - soft
+        sof_med_avg = sof_med.median()
+        print('Soft - Medium delta:')
+        print(round(sof_med_avg["LapTime"], 3))
+    if 'medium' in locals() and 'hard' in locals():
+        med_har = hard - medium
+        med_har_avg = med_har.median()
+        print('Medium - Hard delta:')
+        print(round(med_har_avg["LapTime"], 3))
+    if 'soft' in locals() and 'hard' in locals():
+        sof_har = hard - soft
+        sof_har_avg = sof_har.median()
+        print('Soft - Hard delta:')
+        print(round(sof_har_avg["LapTime"], 3))
 
     plt.grid(which = 'both')
     plt.show()
 
 
-    # for :
-    #     x = softs["LapNumber"]
-    #     y = softs["LapTime"].dt.total_seconds()
-    #     y_avg = pd.to_numeric(softs['LapTime'].dt.total_seconds()).groupby(softs['LapNumber'])
-    #     y_avg = y_avg.mean().to_frame().reset_index(level = 0)
-    #     ax.plot(x,y,'r.', alpha = 0.5)
-    #     ax.plot(y_avg["LapNumber"], y_avg["LapTime"],'ro', alpha = 1)
-    #
-    #
-    # plt.show()
 
     return 0
-
-
-# def driver_tire_data(driver_list, laps):
-#     drvs = data_list(driver_list, laps, 'all')
-#     print(drvs[0]['Compound'])
-#     return 0
-
-# def ten_best(driver_list, session):
-#     drvs = data_list(driver_list, session, 'all')
-#     for i in range(len(drvs)):
-#         print(drvs[i].Driver, ' Lap Time:\n', drvs[i].LapTime)
-#
-#     return 1
