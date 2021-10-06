@@ -11,7 +11,7 @@ table = soup.find_all('table')[0]
 df = pd.read_html(str(table), flavor='bs4', header=[0])[0]
 df.drop(["Unnamed: 0","Unnamed: 6"],axis=1, inplace=True)
 df.plot.bar(x="Driver", y="PTS");
-#plt.show()
+plt.show()
 
 ### Data extraction for one race
 source = urllib.request.urlopen(f"https://www.formula1.com/en/results.html/1990/races/64/united-states/race-result.html").read()
