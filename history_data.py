@@ -66,7 +66,8 @@ def seasons_results(race_urls):
 
         #add drivers if they are not in season_results_df
         for ind in df.index.difference(season_results_df.index):
-            season_results_df.append([df['Driver'].loc[ind],df['Car'].loc[ind],*placeholder])
+            season_results_df.loc[ind] = [df['Driver'].loc[ind],df['Car'].loc[ind],*placeholder]
+            # season_results_df.append([df['Driver'].loc[ind],df['Car'].loc[ind],*placeholder])
 
         for ind in df.index:
             pts = df['PTS'].where(df.index == ind).dropna().values[0]
@@ -82,3 +83,4 @@ def seasons_results(race_urls):
 race_urls = get_race_urls(2020)
 season_results_df = None
 results = seasons_results(race_urls)
+print(results)
