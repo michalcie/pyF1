@@ -57,7 +57,7 @@ def seasons_results(race_urls):
         if len(race_results.find_all('table')) > 0:
             table = race_results.find_all('table')[0]
         df = pd.read_html(str(table), flavor='bs4', header=[0])[0]
-        df.drop(["Unnamed: 0","Unnamed: 8"], axis=1, inplace=True)
+        # df.drop(["Unnamed: 0","Unnamed: 8"], axis=1, inplace=True)
         df.set_index('No', inplace=True)
 
         #establish season results df on first race information
@@ -83,7 +83,6 @@ def seasons_results(race_urls):
     return season_results_df
 
 race_urls = get_race_urls(2021)
-print(race_urls)
 season_results_df = None
 results = seasons_results(race_urls)
 print(results)
@@ -91,7 +90,7 @@ cum_results = results.drop(['Driver', 'Car'], axis=1).cumsum(axis=1)
 ####configure dataframe for plotting####
 cum_results['Driver'] = results['Driver'].apply(lambda s : s[-3:]).map(str.upper)
 cum_results.set_index('Driver', inplace=True)
-cum_results.sort_values(by='austria',ascending=False, inplace=True)
+cum_results.sort_values(by=cum_results.columns[1],ascending=False, inplace=True)
 print(cum_results)
 
 
@@ -99,4 +98,12 @@ cum_results.transpose().plot.line(figsize=(14,8),use_index=False,
                                   xlim=(0,15)).legend(loc='center left',
                                                       bbox_to_anchor=(1.0, 0.5))
 
+# plt.show()
+print(results)
+results['Driver'] = results['Driver'].apply(lambda s : s[-3:]).map(str.upper)
+results.sort_values(by='austria',ascending=False, inplace=True)
+results.set_index('Driver', inplace=True)
+results = results.drop(['Car'], axis=1)
+print(results)
+results.transpose().rolling(3).sum().plot(figsize=(14,8),use_index=False, xlim=(2,15)).legend(loc='center left',bbox_to_anchor=(1.0, 0.5))
 plt.show()
