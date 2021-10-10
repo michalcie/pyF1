@@ -2,7 +2,12 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import urllib.request
 import matplotlib.pyplot as plt
+from fastf1 import plotting
+import matplotlib.pyplot as plt
 
+# plt.rcParams['axes.facecolor']='black'
+# plt.rcParams['savefig.facecolor']='black'
+# plt.style.use(['dark_background'])
 
 ### Data extraction for the whole season
 source = urllib.request.urlopen('https://www.formula1.com/en/results.html/2021/drivers.html').read()
@@ -69,7 +74,6 @@ def seasons_results(race_urls):
         for ind in df.index.difference(season_results_df.index):
             season_results_df.loc[ind] = [df['Driver'].loc[ind],df['Car'].loc[ind],*placeholder]
             # season_results_df.append([df['Driver'].loc[ind],df['Car'].loc[ind],*placeholder])
-
         for ind in df.index:
             if 'PTS' in df.columns:
                 pts = df['PTS'].where(df.index == ind).dropna()
@@ -85,25 +89,24 @@ def seasons_results(race_urls):
 race_urls = get_race_urls(2021)
 season_results_df = None
 results = seasons_results(race_urls)
-print(results)
+color = {'HAM': '#00d2be', 'VER': '#0600ef', 'NOR': '#ff8700', 'LEC': '#dc0000', 'BOT': '#00d2be', 'RIC': '#ff8700', 'SAI': '#dc0000', 'PER': '#0600ef', 'GAS': '#2b4562', 'STR': '#006F62', 'TSU': '#2b4562', 'OCO': '#0090ff', 'ALO': '#0090ff', 'MAZ': '#ffffff', 'RAI': '#900000', 'MSC': '#ffffff', 'LAT': '#005AFF', 'RUS': '#005AFF', 'VET': '#006F62', 'KUB': '#900000', 'GIO': '#900000'}
+style = {'HAM': '-', 'VER': '-', 'NOR': '-', 'LEC': '-', 'BOT': '--', 'RIC': '--', 'SAI': '--', 'PER': '--', 'GAS': '-', 'STR': '--', 'TSU': '--', 'OCO': '--', 'ALO': '-', 'MAZ': '--', 'RAI': '-', 'MSC': '-', 'LAT': '-', 'RUS': '-', 'VET': '-', 'KUB': ':', 'GIO': '-'}
+
 cum_results = results.drop(['Driver', 'Car'], axis=1).cumsum(axis=1)
-####configure dataframe for plotting####
 cum_results['Driver'] = results['Driver'].apply(lambda s : s[-3:]).map(str.upper)
 cum_results.set_index('Driver', inplace=True)
 cum_results.sort_values(by=cum_results.columns[1],ascending=False, inplace=True)
-print(cum_results)
-
-
-cum_results.transpose().plot.line(figsize=(14,8),use_index=False,
+cum_results = cum_results.transpose()
+ax = cum_results.plot(color = [color.get(x, '#33333') for x in cum_results.columns], style = [style.get(x, '-') for x in cum_results.columns], figsize=(14,8),use_index=True,
                                   xlim=(0,15)).legend(loc='center left',
                                                       bbox_to_anchor=(1.0, 0.5))
+rol_results = results
+rol_results['Driver'] = results['Driver'].apply(lambda s : s[-3:]).map(str.upper)
+rol_results.sort_values(by='austria',ascending=False, inplace=True)
+rol_results.set_index('Driver', inplace=True)
+rol_results = rol_results.drop(['Car'], axis=1)
+rol_results = rol_results.transpose().rolling(3).sum().fillna(method='bfill').fillna(method='ffill')
 
-# plt.show()
-print(results)
-results['Driver'] = results['Driver'].apply(lambda s : s[-3:]).map(str.upper)
-results.sort_values(by='austria',ascending=False, inplace=True)
-results.set_index('Driver', inplace=True)
-results = results.drop(['Car'], axis=1)
-print(results)
-results.transpose().rolling(3).sum().plot(figsize=(14,8),use_index=False, xlim=(2,15)).legend(loc='center left',bbox_to_anchor=(1.0, 0.5))
+ax2 = rol_results.plot(color = [color.get(x, '#33333') for x in rol_results.columns], style = [style.get(x, '-') for x in rol_results.columns], figsize=(14,8),use_index=False, xlim=(2,15)).legend(loc='center left',bbox_to_anchor=(1.0, 0.5))
+# plt.grid(b=True, which='both', color='0.15s', linestyle='--')
 plt.show()
