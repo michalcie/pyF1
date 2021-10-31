@@ -4,6 +4,7 @@ import pandas as pd
 from fastf1 import plotting
 from fastf1 import utils
 from matplotlib import pyplot as plt
+import matplotlib.patches as mpatches
 from scipy import interpolate
 import os
 plt.style.use('dark_background')
@@ -11,8 +12,6 @@ plt.style.use('dark_background')
 dirname = os.path.dirname(__file__)
 filename = os.path.join(dirname, 'cache')
 print(filename)
-# ff1.utils.enable_cache(
-#     r'C:\Users\Dell\PycharmProjects\pyF1_Analysis\path\to\folder\for\cache')  # optional but recommended
 ff1.api.Cache.enable_cache(filename)
 
 def crate_event(year, gp, session):
@@ -25,7 +24,7 @@ def crate_event(year, gp, session):
 
 def overlay_drv(drv1, drv2):
     fig, ax = plt.subplots(2)
-    fig.canvas.set_window_title("".join(('Driver overlay: ', drv1.Driver, ' vs ', drv2.Driver)))
+    fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', drv1.Driver, ' vs ', drv2.Driver)))
     fig.suptitle("".join((drv1.Driver, ' vs. ', drv2.Driver)))
     ax[0].plot(drv1.telemetry['Distance'], drv1.telemetry['Speed'],
                color=plotting.TEAM_COLORS[drv1['Team']],
@@ -33,10 +32,12 @@ def overlay_drv(drv1, drv2):
     ax[0].plot(drv2.telemetry['Distance'], drv2.telemetry['Speed'],
                color=plotting.TEAM_COLORS[drv2['Team']],
                label="".join((drv2.Driver, ' ', str(drv2.LapTime).split(':', 1)[1][:-3])))
-    legend_x = 1.1
-    legend_y = 0.75
+    ax[0].set_xlim([50, None])
+    ax[0].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
+    # legend_x = 1.1
+    # legend_y = 0.75
     ax[0].legend(loc='upper center',
-                 bbox_to_anchor=(0.83, 0.15),
+                 bbox_to_anchor=(0.8, 0.15),
                  shadow=False,
                  ncol=2)
     ax[0].set_xlabel('Lap Distance [m]')
@@ -46,6 +47,8 @@ def overlay_drv(drv1, drv2):
                '--', color=plotting.TEAM_COLORS[drv1['Team']])
     ax[1].set_xlabel('Lap Distance [m]')
     ax[1].set_ylabel("".join(('Relative time delta\n(', drv1.Driver, ' to ', drv2.Driver, ')')))
+    fig.set_size_inches(11.5, 7)
+    ax[1].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
     plt.show()
 
 
@@ -163,14 +166,33 @@ def search(name, drvs):
 def overlay_map_plot(drvs, segments, time_differance, splines):
     sector_point = np.ceil(1100 / len(segments))
     fig, ax = plt.subplots()
-    fig.canvas.set_window_title("".join('Fastest mini sectors'))
-
+    fig.canvas.set_window_title("".join('Driver overlay: Fastest mini sectors'))
+    driver_title = [drvs[value].Driver for value in range(len(drvs))]
+    title = driver_title[0]
+    for i in range(len(driver_title) - 1):
+        title = "".join((title, " vs. ", driver_title[i+1]))
+    fig.suptitle(title)
+    legend = ['']*len(drvs)
+    legend_color = ['']*len(drvs)
+    for i in range(len(drvs)):
+        legend[i]= drvs[i].Driver
+        legend_color[i] = plotting.TEAM_COLORS[drvs[i]['Team']]
+    print(legend)
+    print(legend_color)
+    patch = [mpatches.Patch(color=legend_color[i], label=legend[i]) for i in range(len(legend))]
+    print(patch)
     for i in range(len(segments) - 1):
         distance = [value for value in (np.arange(segments[i], segments[i + 1], sector_point))]
         X = splines['Space/X'][time_differance[i]](distance)
         Y = splines['Space/Y'][time_differance[i]](distance)
         ax.plot(X, Y, color=plotting.TEAM_COLORS[search(time_differance[i], drvs)])
+
     ax.axes.set_aspect('equal')
+    ax.set_xlabel("X coordinate")
+    ax.set_ylabel("Y coordinate")
+    plt.legend(handles=patch)
+    fig.set_size_inches(11.5, 7)
+    # plt.grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
     plt.show()
 
 
@@ -237,11 +259,15 @@ def plot_driver_tire_data(driver_list, laps):
             elif np.logical_and(current_stint['Compound'] == 'HARD', 1).all():
                 color = 'w'
 
+            fig.suptitle("Tire overview")
             ax[0].plot(current_stint['TyreLife'], times, '.', color=color)
             lookup = np.polyfit(current_stint['TyreLife'], times,2)
             x = np.linspace(min(current_stint['TyreLife']), max(current_stint['TyreLife']),100)
             lookup = np.poly1d(lookup)
             y = lookup(x)
+            # ax[0].set_title("Tire age")
+            ax[0].set_xlabel("Tires age [Laps]")
+            ax[0].set_ylabel("Lap time [s]")
             ax[0].plot(x,y,'-',color=color)
 
             ax[1].plot(current_stint['LapNumber'], times, '.', color=color)
@@ -249,24 +275,27 @@ def plot_driver_tire_data(driver_list, laps):
             x = np.linspace(min(current_stint['LapNumber']), max(current_stint['LapNumber']),100)
             lookup = np.poly1d(lookup)
             y = lookup(x)
+            # ax[1].set_title("Tire in Race")
+            ax[1].set_xlabel("Race Laps")
+            ax[1].set_ylabel("Lap time [s]")
             ax[1].plot(x,y,'-',color=color)
-
+    fig.set_size_inches(11.5, 7)
     plt.draw()
 
     return 0
 
 def session_plot(driver_list, laps):
-    fig, ax = plt.subplots()
+    # fig, ax = plt.subplots()
     drvs = data_list(driver_list, laps, 'all')
     y = drvs[0].loc[drvs[0]['IsAccurate'] == True]
-    ax.plot(y['LapNumber'], y['LapTime'].dt.total_seconds())
+    # ax.plot(y['LapNumber'], y['LapTime'].dt.total_seconds())
 
     lookup = np.polyfit(y['LapNumber'], y['LapTime'].dt.total_seconds(),2)
     x = np.linspace(min(y['LapNumber']), max(y['LapNumber']),100)
     lookup = np.poly1d(lookup)
     y = lookup(x)
-    ax.plot(x,y)
-    plt.show()
+    # ax.plot(x,y)
+    # plt.show()
 
 def tire_data():
 
@@ -353,6 +382,7 @@ def tire_by_lap(session, event):
         print(round(sof_har_avg["LapTime"], 3))
 
     plt.grid(which = 'both')
+    fig.set_size_inches(11.5, 7)
     plt.show()
 
 
