@@ -177,8 +177,6 @@ def overlay_map_plot(drvs, segments, time_differance, splines):
     for i in range(len(drvs)):
         legend[i]= drvs[i].Driver
         legend_color[i] = plotting.TEAM_COLORS[drvs[i]['Team']]
-    print(legend)
-    print(legend_color)
     patch = [mpatches.Patch(color=legend_color[i], label=legend[i]) for i in range(len(legend))]
     print(patch)
     for i in range(len(segments) - 1):
@@ -238,6 +236,9 @@ def plot_tire_data():
 
 def plot_driver_tire_data(driver_list, laps):
     drvs = data_list(driver_list, laps, 'all')
+    if len(drvs) > 1:
+        print("WIP: in plot_driver_tire_data: only one driver taken into account:")
+
     # hard = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'HARD', drvs[0]['IsAccurate'] == True)]
     # medium = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'MEDIUM', drvs[0]['IsAccurate'] == True)]
     # soft = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'SOFT', drvs[0]['IsAccurate'] == True)]
@@ -287,6 +288,9 @@ def plot_driver_tire_data(driver_list, laps):
 def session_plot(driver_list, laps):
     # fig, ax = plt.subplots()
     drvs = data_list(driver_list, laps, 'all')
+    if len(drvs) > 1:
+        print("WIP:in session_plot: only one driver taken into account:")
+        # print(drvs[0]['Driver'])
     y = drvs[0].loc[drvs[0]['IsAccurate'] == True]
     # ax.plot(y['LapNumber'], y['LapTime'].dt.total_seconds())
 

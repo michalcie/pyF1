@@ -38,9 +38,9 @@ def get_race_urls(year):
 
 ### Extraction of multiple races in season
 
-### I have issue do season 2020, 2021
 def seasons_results(race_urls):
     season_results_df = None
+    race_count = None
     for n, race in enumerate(race_urls):
         HOMEPAGE = f"https://www.formula1.com"
         placeholder = [0 for i in range(n)]
@@ -61,6 +61,12 @@ def seasons_results(race_urls):
         race_results = BeautifulSoup(results_page,'html.parser')
         if len(race_results.find_all('table')) > 0:
             table = race_results.find_all('table')[0]
+            print("\t Results loaded")
+        else:
+            print("\t No results")
+            if race_count == None:
+                race_count = n
+                # print(race_count)
         df = pd.read_html(str(table), flavor='bs4', header=[0])[0]
         # df.drop(["Unnamed: 0","Unnamed: 8"], axis=1, inplace=True)
         df.set_index('No', inplace=True)
@@ -80,15 +86,16 @@ def seasons_results(race_urls):
                 season_results_df.loc[ind, race_name] = int(pts)
 
 
+
     #####Format the dataframe with a few lines#####
     season_results_df.sort_index(inplace=True)
     season_results_df.fillna(0, inplace=True)
     # season_results_df['Car'] = season_results_df['Car'].apply(lambda s : s[:3]).map(str.upper) #retain last 3 digits and caps
-    return season_results_df
+    return season_results_df, race_count
 
 race_urls = get_race_urls(2021)
 
-results = seasons_results(race_urls)
+results, race_count = seasons_results(race_urls)
 color = {'HAM': '#00d2be', 'VER': '#0600ef', 'NOR': '#ff8700', 'LEC': '#dc0000', 'BOT': '#00d2be', 'RIC': '#ff8700', 'SAI': '#dc0000', 'PER': '#0600ef', 'GAS': '#2b4562', 'STR': '#006F62', 'TSU': '#2b4562', 'OCO': '#0090ff', 'ALO': '#0090ff', 'MAZ': '#ffffff', 'RAI': '#900000', 'MSC': '#ffffff', 'LAT': '#005AFF', 'RUS': '#005AFF', 'VET': '#006F62', 'KUB': '#900000', 'GIO': '#900000'}
 style = {'HAM': '-', 'VER': '-', 'NOR': '-', 'LEC': '-', 'BOT': '--', 'RIC': '--', 'SAI': '--', 'PER': '--', 'GAS': '-', 'STR': '--', 'TSU': '--', 'OCO': '--', 'ALO': '-', 'MAZ': '--', 'RAI': '-', 'MSC': '-', 'LAT': '-', 'RUS': '-', 'VET': '-', 'KUB': ':', 'GIO': '-'}
 
@@ -98,7 +105,7 @@ cum_results.set_index('Driver', inplace=True)
 cum_results.sort_values(by=cum_results.columns[1],ascending=False, inplace=True)
 cum_results = cum_results.transpose()
 ax = cum_results.plot(color = [color.get(x, '#33333') for x in cum_results.columns], style = [style.get(x, '-') for x in cum_results.columns], figsize=(11.5,7),use_index=True,
-                                  xlim=(0,16))
+                                  xlim=(0,race_count-1))
 ax.legend(loc='center left',
                     bbox_to_anchor=(1.0, 0.5))
 ax.set(xlabel="Races", ylabel="Total points scored", title = "Point throughout the season")
@@ -110,7 +117,7 @@ rol_results.set_index('Driver', inplace=True)
 rol_results = rol_results.drop(['Car'], axis=1)
 rol_results = rol_results.transpose().rolling(3).sum().fillna(method='bfill').fillna(method='ffill')
 
-ax2 = rol_results.plot(color = [color.get(x, '#33333') for x in rol_results.columns], style = [style.get(x, '-') for x in rol_results.columns], figsize=(11.5,7),use_index=False, xlim=(2,16))
+ax2 = rol_results.plot(color = [color.get(x, '#33333') for x in rol_results.columns], style = [style.get(x, '-') for x in rol_results.columns], figsize=(11.5,7),use_index=False, xlim=(2,race_count-1))
 ax2.legend(loc='center left',bbox_to_anchor=(1.0, 0.5))
 ax2.set(xlabel="Races", ylabel="Sum of 3 races", title = "Moving average throughout the season")# plt.grid(b=True, which='both', color='0.15s', linestyle='--')
 plt.show()
