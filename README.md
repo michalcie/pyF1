@@ -2,7 +2,7 @@
 Predefined tools and graphs for F1 telemetry and laptime statistical analysis based on Fast-F1 by theOehrly.
 
 # Important Notice
-Project currently compatible with fastf1 2.1.7
+Project currently compatible with fastf1 2.1.11
 
 ## Intro
 This project is started by motor racing enthusiast that some day decided to test his abilities in predicting and reverse engineering car performance. By no way am I a programer, just a curious mechanical engineer with some basic knowledge about computers.
