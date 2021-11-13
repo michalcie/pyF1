@@ -15,6 +15,9 @@ print(filename)
 ff1.api.Cache.enable_cache(filename)
 
 def crate_event(year, gp, session):
+    ### Description:
+    ### input:
+    ### output:
     event = ff1.get_session(year, gp, session)
     print(event.name)
     laps = event.load_laps(with_telemetry=True, livedata=None)
@@ -23,14 +26,17 @@ def crate_event(year, gp, session):
 
 
 def overlay_drv(drv1, drv2):
+    ### Description:
+    ### input:
+    ### output:
     fig, ax = plt.subplots(2)
     fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', drv1.Driver, ' vs ', drv2.Driver)))
     fig.suptitle("".join((drv1.Driver, ' vs. ', drv2.Driver)))
     ax[0].plot(drv1.telemetry['Distance'], drv1.telemetry['Speed'],
-               color=plotting.TEAM_COLORS[drv1['Team']],
+               color=plotting.team_color(drv1['Team']),
                label="".join((drv1.Driver, ' ', str(drv1.LapTime).split(':', 1)[1][:-3])))
     ax[0].plot(drv2.telemetry['Distance'], drv2.telemetry['Speed'],
-               color=plotting.TEAM_COLORS[drv2['Team']],
+               color=plotting.team_color(drv2['Team']),
                label="".join((drv2.Driver, ' ', str(drv2.LapTime).split(':', 1)[1][:-3])))
     ax[0].set_xlim([50, None])
     ax[0].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
@@ -44,15 +50,19 @@ def overlay_drv(drv1, drv2):
     ax[0].set_ylabel('Velocity [kmh]')
     delta,ref_tel,dump2 = utils.delta_time(drv2, drv1)
     ax[1].plot(ref_tel['Distance'], delta,
-               '--', color=plotting.TEAM_COLORS[drv1['Team']])
+               '--', color=plotting.team_color(drv1['Team']))
     ax[1].set_xlabel('Lap Distance [m]')
     ax[1].set_ylabel("".join(('Relative time delta\n(', drv1.Driver, ' to ', drv2.Driver, ')')))
     fig.set_size_inches(11.5, 7)
+    ax[1].set_xlim([50, None])
     ax[1].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
     plt.show()
 
 
 def overlay_drivers(driver_list, session):
+    ### Description:
+    ### input:
+    ### output:
     drvs = data_list(driver_list, session, 'fastest')
     driver1 = drvs[0]
     driver2 = drvs[1]
@@ -61,7 +71,44 @@ def overlay_drivers(driver_list, session):
     # return driver1, driver2
 
 
+def overlay_laps(lap1, lap2, title, legl1, legl2):
+    ### Description:
+    ### input:
+    ### output:
+    fig, ax = plt.subplots(2)
+    fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', legl1, ' vs ', legl2)))
+    fig.suptitle("".join((legl1, ' vs. ', legl2)))
+    ax[0].plot(lap1.telemetry['Distance'], lap1.telemetry['Speed'],
+               color=plotting.team_color(lap1['Team']),
+               label="".join((lap1.Driver, ' ', str(lap1.LapTime).split(':', 1)[1][:-3])))
+    ax[0].plot(lap2.telemetry['Distance'], lap2.telemetry['Speed'],
+               color=plotting.team_color(lap2['Team']),
+               label="".join((lap2.Driver, ' ', str(lap2.LapTime).split(':', 1)[1][:-3])))
+    ax[0].set_xlim([50, None])
+    ax[0].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
+    # legend_x = 1.1
+    # legend_y = 0.75
+    ax[0].legend(loc='upper center',
+                 bbox_to_anchor=(0.8, 0.15),
+                 shadow=False,
+                 ncol=2)
+    ax[0].set_xlabel('Lap Distance [m]')
+    ax[0].set_ylabel('Velocity [kmh]')
+    delta,ref_tel,dump2 = utils.delta_time(lap2, lap1)
+    ax[1].plot(ref_tel['Distance'], delta,
+               '--', color=plotting.team_color(lap1['Team']))
+    ax[1].set_xlabel('Lap Distance [m]')
+    ax[1].set_ylabel("".join(('Relative time delta\n(', lap1.Driver, ' to ', lap2.Driver, ')')))
+    fig.set_size_inches(11.5, 7)
+    ax[1].set_xlim([50, None])
+    ax[1].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
+    # plt.show()
+    return fig, ax
+
 def index(drv):
+    ### Description:
+    ### input:
+    ### output:
     index0 = drv.telemetry['Distance'].index[0]
     space0 = drv.telemetry['Distance'].loc[index0]
     index_end = drv.telemetry['Distance'].index[-1]
@@ -71,6 +118,9 @@ def index(drv):
 
 
 def spln(drv, idx0, idxe, name1, name2):
+    ### Description:
+    ### input:
+    ### output:
     x = drv.telemetry[name1].loc[idx0:idxe]
     y = drv.telemetry[name2].loc[idx0:idxe]
     lookup = interpolate.InterpolatedUnivariateSpline(x, y, k=1)
@@ -78,6 +128,9 @@ def spln(drv, idx0, idxe, name1, name2):
 
 
 def index_multi(drvs):
+    ### Description:
+    ### input:
+    ### output:
     size = len(drvs)
     output = np.empty((2, size))
     for i in range(size):
@@ -90,6 +143,9 @@ def index_multi(drvs):
 
 
 def data_list(driver_list, laps, type):
+    ### Description:
+    ### input:
+    ### output:
     size = len(driver_list)
     if type == 'fastest':
         drvs = [laps.pick_driver(driver_list[i]).pick_fastest() for i in range(size)]
@@ -99,6 +155,9 @@ def data_list(driver_list, laps, type):
 
 
 def multi_spline(drvs, idx):
+    ### Description:
+    ### input:
+    ### output:
     size = len(drvs)
     output = [[None] * size for j in range(3)]
 
@@ -118,6 +177,9 @@ def multi_spline(drvs, idx):
 
 # noinspection PyUnboundLocalVariable
 def segment_times(splines, segments, drvs):
+    ### Description:
+    ### input:
+    ### output:
     sgn_len = len(segments)
 
     for i in range(len(splines)):
@@ -132,6 +194,9 @@ def segment_times(splines, segments, drvs):
 
 
 def fastest_segments(segments):
+    ### Description:
+    ### input:
+    ### output:
     output = [None] * segments.shape[1]
     for i in range(segments.shape[1]):
         output[i] = segments[[i + 1]].idxmin().to_string()[-3:]
@@ -140,6 +205,9 @@ def fastest_segments(segments):
 
 
 def plot_limits(drvs, idx):
+    ### Description:
+    ### input:
+    ### output:
     limit_min = min(drvs[0].telemetry['X'].loc[idx['Index zero'][drvs[0].Driver]:idx['Index omega'][drvs[0].Driver]])
     limit_max = max(drvs[0].telemetry['X'].loc[idx['Index zero'][drvs[0].Driver]:idx['Index omega'][drvs[0].Driver]])
 
@@ -159,11 +227,17 @@ def plot_limits(drvs, idx):
 
 
 def search(name, drvs):
+    ### Description:
+    ### input:
+    ### output:
     output = [element['Team'] for element in drvs if element['Driver'] == name]
     return output[0]
 
 
 def overlay_map_plot(drvs, segments, time_differance, splines):
+    ### Description:
+    ### input:
+    ### output:
     sector_point = np.ceil(1100 / len(segments))
     fig, ax = plt.subplots()
     fig.canvas.set_window_title("".join('Driver overlay: Fastest mini sectors'))
@@ -176,14 +250,14 @@ def overlay_map_plot(drvs, segments, time_differance, splines):
     legend_color = ['']*len(drvs)
     for i in range(len(drvs)):
         legend[i]= drvs[i].Driver
-        legend_color[i] = plotting.TEAM_COLORS[drvs[i]['Team']]
+        legend_color[i] = plotting.team_color(drvs[i]['Team'])
     patch = [mpatches.Patch(color=legend_color[i], label=legend[i]) for i in range(len(legend))]
     print(patch)
     for i in range(len(segments) - 1):
         distance = [value for value in (np.arange(segments[i], segments[i + 1], sector_point))]
         X = splines['Space/X'][time_differance[i]](distance)
         Y = splines['Space/Y'][time_differance[i]](distance)
-        ax.plot(X, Y, color=plotting.TEAM_COLORS[search(time_differance[i], drvs)])
+        ax.plot(X, Y, color=plotting.team_color(search(time_differance[i], drvs)))
 
     ax.axes.set_aspect('equal')
     ax.set_xlabel("X coordinate")
@@ -195,6 +269,9 @@ def overlay_map_plot(drvs, segments, time_differance, splines):
 
 
 def overlay_map_multi(driver_list, session):
+    ### Description:
+    ### input:
+    ### output:
     sectors = 100
     sector_point = np.ceil(1100 / sectors)
 
@@ -235,6 +312,9 @@ def plot_tire_data():
 
 
 def plot_driver_tire_data(driver_list, laps):
+    ### Description:
+    ### input:
+    ### output:
     drvs = data_list(driver_list, laps, 'all')
     if len(drvs) > 1:
         print("WIP: in plot_driver_tire_data: only one driver taken into account:")
@@ -286,6 +366,9 @@ def plot_driver_tire_data(driver_list, laps):
     return 0
 
 def session_plot(driver_list, laps):
+    ### Description:
+    ### input:
+    ### output:
     # fig, ax = plt.subplots()
     drvs = data_list(driver_list, laps, 'all')
     if len(drvs) > 1:
@@ -307,6 +390,9 @@ def tire_data():
 
 
 def tire_by_lap(session, event):
+    ### Description:
+    ### input:
+    ### output:
     fig, ax = plt.subplots(2)
     print(event.name)
     if event.name == 'Qualifying':

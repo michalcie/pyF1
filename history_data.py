@@ -5,9 +5,6 @@ import matplotlib.pyplot as plt
 from fastf1 import plotting
 import matplotlib.pyplot as plt
 plt.style.use('dark_background')
-# plt.rcParams['axes.facecolor']='black'
-# plt.rcParams['savefig.facecolor']='black'
-# plt.style.use(['dark_background'])
 
 ### Data extraction for the whole season
 source = urllib.request.urlopen('https://www.formula1.com/en/results.html/2021/drivers.html').read()
@@ -96,9 +93,12 @@ def seasons_results(race_urls):
 race_urls = get_race_urls(2021)
 
 results, race_count = seasons_results(race_urls)
+
+# setting drivers colors using fastf1
 color = {'HAM': '#00d2be', 'VER': '#0600ef', 'NOR': '#ff8700', 'LEC': '#dc0000', 'BOT': '#00d2be', 'RIC': '#ff8700', 'SAI': '#dc0000', 'PER': '#0600ef', 'GAS': '#2b4562', 'STR': '#006F62', 'TSU': '#2b4562', 'OCO': '#0090ff', 'ALO': '#0090ff', 'MAZ': '#ffffff', 'RAI': '#900000', 'MSC': '#ffffff', 'LAT': '#005AFF', 'RUS': '#005AFF', 'VET': '#006F62', 'KUB': '#900000', 'GIO': '#900000'}
 style = {'HAM': '-', 'VER': '-', 'NOR': '-', 'LEC': '-', 'BOT': '--', 'RIC': '--', 'SAI': '--', 'PER': '--', 'GAS': '-', 'STR': '--', 'TSU': '--', 'OCO': '--', 'ALO': '-', 'MAZ': '--', 'RAI': '-', 'MSC': '-', 'LAT': '-', 'RUS': '-', 'VET': '-', 'KUB': ':', 'GIO': '-'}
 
+# preparing data and plotting cummulative point in season
 cum_results = results.drop(['Driver', 'Car'], axis=1).cumsum(axis=1)
 cum_results['Driver'] = results['Driver'].apply(lambda s : s[-3:]).map(str.upper)
 cum_results.set_index('Driver', inplace=True)
@@ -110,6 +110,9 @@ ax.legend(loc='center left',
                     bbox_to_anchor=(1.0, 0.5))
 ax.set(xlabel="Races", ylabel="Total points scored", title = "Point throughout the season")
 
+
+# preparing data for moving average filter and plotting
+    # ploted from index == 2, as 3 frame windows is used and first 2 index are useless
 rol_results = results
 rol_results['Driver'] = results['Driver'].apply(lambda s : s[-3:]).map(str.upper)
 rol_results.sort_values(by='austria',ascending=False, inplace=True)
