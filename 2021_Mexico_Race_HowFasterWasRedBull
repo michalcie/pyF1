@@ -39,6 +39,10 @@ drivers_list = ['VER', 'HAM', 'PER','BOT']
 best_lap_number = 15
 driver_list = tt.data_list(drivers_list, laps, 'all')
 
+
+"""
+Preparing data, and creating ridgeline plots
+"""
 c = []
 median = []
 mean = []
@@ -57,21 +61,39 @@ for i in range(len(driver_list)):
 
         df = df.join(df_temp)
 
+"""
+Some statistical insight might be useful
+"""
+
     c.append(plotting.team_color(driver_list[i]['Team'].iloc[0]))
     median.append(df_temp.median(axis = 0))
     mean.append(df_temp.mean(axis = 0))
     q25.append(df_temp.quantile(q=0.25, axis = 0, numeric_only = True))
     q75.append(df_temp.quantile(q=0.75, axis = 0, numeric_only = True))
 
+
+
+"""
+Let's finally plot graph
+"""
+
 fig, ax = joypy.joyplot(df, overlap=0.9, color = c, linecolor='w', linewidth=.5, alpha = 1, title = "Race Pace Mexico 2021", figsize = (11.5, 7))
 xliml = 78
 xlimr = 86
+
+"""
+Adding some statistical data for nerds, let's also set better x axis limits
+"""
 statistics(ax, median, 'r', 1)
 statistics(ax, mean, 'k', 0.6)
 statistics(ax, q25, 'k', 0.3)
 statistics(ax, q75, 'k', 0.3)
 for i in range(len(ax)):
     ax[i].set_xlim(left = xliml, right = xlimr)
+
+"""
+Printing out statiscal data for some additional insight
+"""
 
 print("Median: ")
 print(median)
@@ -82,3 +104,11 @@ print(q25)
 print("Quantile 75: ")
 print(q75)
 plt.show()
+
+"""
+It seems that Red Bull was faster, median and average are about 0.2 faster than Hamilton
+It doesn't seem much, but it is worth to notice, that 25 quantile is much further on both Red Bull cars
+also Perez.
+It might be that in Mexico Red Bull potential was much higher and Red Bull was cotrolling the situation,
+but it was to hard to overtake Hamilton despite very good pace.
+"""
