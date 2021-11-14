@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches
 from scipy import interpolate
 import os
+import joypy
 plt.style.use('dark_background')
 
 dirname = os.path.dirname(__file__)
@@ -56,6 +57,90 @@ def overlay_drv(drv1, drv2):
     fig.set_size_inches(11.5, 7)
     ax[1].set_xlim([50, None])
     ax[1].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
+    plt.show()
+
+def find_nearest(array, values):
+    ### Description:
+    ### input:
+    ### output:
+    indices = np.abs(np.subtract.outer(array, values[0])).argmin(0)
+    return indices
+
+
+def statistics(ax, values, color, alpha):
+    ### Description:
+    ### input:
+    ### output:
+    for i in range(len(values)):
+        y_min = 0
+        y_max_med = ax[i].lines[1].get_ydata()
+        x_data = ax[i].lines[1].get_xdata()
+        ind = find_nearest(x_data, values[i])
+        y_max = y_max_med[ind]
+        ax[i].set_axisbelow(False)
+        ax[i].plot([values[i][0], values[i][0]], [y_min, y_max], c = color, alpha = alpha, zorder=200)
+
+def ridgeline(drivers_list, laps, title, xliml, xlimr, best_lap_number):
+    """Driver list"""
+    driver_list = data_list(drivers_list, laps, 'all')
+
+    """
+    Preparing data, and creating ridgeline plots
+    """
+    c = []
+    median = []
+    mean = []
+    q25 = []
+    q75 = []
+    for i in range(len(driver_list)):
+        if i == 0:
+            df = driver_list[i].pick_accurate().sort_values(by = 'LapTime').reset_index(drop=True)
+            df = df[['LapTime']]
+            df = pd.DataFrame(data = df.rename(columns = {'LapTime':driver_list[i].Driver.iloc[0]})[driver_list[i].Driver.iloc[0]].dt.total_seconds())
+            df_temp = df
+        if i != 0:
+            df_temp = driver_list[i].pick_accurate().sort_values(by = 'LapTime').reset_index(drop=True)
+            df_temp = df_temp[['LapTime']]
+            df_temp = pd.DataFrame(data = df_temp.rename(columns = {'LapTime':driver_list[i].Driver.iloc[0]})[driver_list[i].Driver.iloc[0]].dt.total_seconds())
+
+            df = df.join(df_temp)
+
+            """
+            Some statistical insight might be useful
+            """
+
+        c.append(plotting.team_color(driver_list[i]['Team'].iloc[0]))
+        median.append(df_temp.median(axis = 0))
+        mean.append(df_temp.mean(axis = 0))
+        q25.append(df_temp.quantile(q=0.25, axis = 0, numeric_only = True))
+        q75.append(df_temp.quantile(q=0.75, axis = 0, numeric_only = True))
+
+    """
+    Let's finally plot graph
+    """
+    print(c)
+    fig, ax = joypy.joyplot(df, overlap=0.9, color = c, linecolor='w', linewidth=.5, alpha = 1, title = title, figsize = (11.5, 7))
+
+    """
+    Adding some statistical data for nerds, let's also set better x axis limits
+    """
+    statistics(ax, median, 'r', 1)
+    statistics(ax, mean, 'k', 0.6)
+    statistics(ax, q25, 'k', 0.3)
+    statistics(ax, q75, 'k', 0.3)
+    for i in range(len(ax)):
+        ax[i].set_xlim(left = xliml, right = xlimr)
+    """
+    Printing out statiscal data for some additional insight
+    """
+    print("Median: ")
+    print(median)
+    print("Average: ")
+    print(mean)
+    print("Quantile 25: ")
+    print(q25)
+    print("Quantile 75: ")
+    print(q75)
     plt.show()
 
 
@@ -474,7 +559,5 @@ def tire_by_lap(session, event):
     plt.grid(which = 'both')
     fig.set_size_inches(11.5, 7)
     plt.show()
-
-
 
     return 0
