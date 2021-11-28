@@ -10,7 +10,7 @@ monza_quali = ff1.get_session(2019, 'Monza', 'Q')
 # Pronto Sestian?
 
 laps = monza_quali.load_laps(with_telemetry=True, livedata=None)
-fast_leclerc = laps.pick_driver('LEC').pick_fastest()
+fast_leclerc = laps.pick_driver('VER').pick_fastest()
 fast_hamilton = laps.pick_driver('HAM').pick_fastest()
 yLEC = fast_leclerc.telemetry['Y']
 xLEC = fast_leclerc.telemetry['X']

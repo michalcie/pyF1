@@ -11,5 +11,6 @@ This project is started by motor racing enthusiast that some day decided to test
 If you read this far contributions are welcome. If you are interested in contributing, open an issue for the proposed feature or issue you would like to work on. This way we can coordinate so that no unnecessary work is done.
 
 ## Roadmap
+For roadmap please see projects tab, that contains all feature and bug that need to be taken care off.
 
 ## Use cases
