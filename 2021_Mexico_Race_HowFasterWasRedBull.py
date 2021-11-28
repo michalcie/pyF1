@@ -12,16 +12,16 @@ Red Bull seemes to have an edge over Mercedes in the race, Hamilton refered to t
 But how much quicker was Red Bull?
 """
 
-laps, event = tt.crate_event(2021, 'USA', 'R') #No mistake as of now 13.11.2021 'USA' returns Mexico City GP - issue#23
+laps, event = tt.crate_event(2021, 'Mexico', 'R') #No mistake as of now 13.11.2021 'USA' returns Mexico City GP - issue#23
 
 """Driver list should contain only finishers to ensure minimal number of valid laps """
 # drivers_list = ['VER', 'HAM', 'PER', 'GAS', 'LEC', 'SAI', 'VET', 'ALO', 'NOR', 'GIO', 'RIC']
 drivers_list = ['VER', 'HAM', 'PER','BOT']
 
-xliml = 78
-xlimr = 86
+xliml = None
+xlimr = None
 best_lap_number = 15 #notused yet
-tt.ridgeline(drivers_list, laps, xliml, xlimr, best_lap_number)
+tt.ridgeline(drivers_list, laps, "Mexico 2021 - How Fast was Redbull?", xliml, xlimr, best_lap_number)
 
 """
 It seems that Red Bull was faster, median and average are about 0.2 faster than Hamilton

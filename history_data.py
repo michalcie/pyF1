@@ -67,7 +67,7 @@ def seasons_results(race_urls):
         df = pd.read_html(str(table), flavor='bs4', header=[0])[0]
         # df.drop(["Unnamed: 0","Unnamed: 8"], axis=1, inplace=True)
         df.set_index('No', inplace=True)
-
+        # print(df)
         #establish season results df on first race information
         if n == 0:
             season_results_df = pd.DataFrame(df[['Driver','Car']], columns=['Driver','Car'], index=df.index)
@@ -87,6 +87,7 @@ def seasons_results(race_urls):
     #####Format the dataframe with a few lines#####
     season_results_df.sort_index(inplace=True)
     season_results_df.fillna(0, inplace=True)
+    # print(season_results_df)
     # season_results_df['Car'] = season_results_df['Car'].apply(lambda s : s[:3]).map(str.upper) #retain last 3 digits and caps
     return season_results_df, race_count
 

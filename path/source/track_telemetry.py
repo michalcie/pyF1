@@ -28,8 +28,13 @@ def crate_event(year, gp, session):
 
 def overlay_drv(drv1, drv2):
     ### Description:
+    ###     DEPRECATED. To be removed
+    ###     Replaced by overlay_laps()
     ### input:
+    ###     drv1, drv2: <class 'fastf1.core.Lap'>
     ### output:
+    ###     none, plot.show()
+
     fig, ax = plt.subplots(2)
     fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', drv1.Driver, ' vs ', drv2.Driver)))
     fig.suptitle("".join((drv1.Driver, ' vs. ', drv2.Driver)))
@@ -118,7 +123,7 @@ def ridgeline(drivers_list, laps, title, xliml, xlimr, best_lap_number):
     """
     Let's finally plot graph
     """
-    print(c)
+    # print(c)
     fig, ax = joypy.joyplot(df, overlap=0.9, color = c, linecolor='w', linewidth=.5, alpha = 1, title = title, figsize = (11.5, 7))
 
     """
@@ -151,15 +156,21 @@ def overlay_drivers(driver_list, session):
     drvs = data_list(driver_list, session, 'fastest')
     driver1 = drvs[0]
     driver2 = drvs[1]
-    overlay_drv(driver1, driver2)
+    fig, ax = overlay_laps(driver1, driver2, "title", driver1.Driver, driver2.Driver)
+    # overlay_drv(driver1, driver2)
     # plt.show()
     # return driver1, driver2
-
+    return fig, ax
 
 def overlay_laps(lap1, lap2, title, legl1, legl2):
     ### Description:
+    ###     Single lap telemetry overlay of 2 drivers
+    ###     Speed, time differance in distance
     ### input:
+    ###     drv1, drv2: <class 'fastf1.core.Lap'>
     ### output:
+    ###     matplotlib fig, ax
+    ###     plt.show() needed
     fig, ax = plt.subplots(2)
     fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', legl1, ' vs ', legl2)))
     fig.suptitle("".join((legl1, ' vs. ', legl2)))
@@ -337,7 +348,7 @@ def overlay_map_plot(drvs, segments, time_differance, splines):
         legend[i]= drvs[i].Driver
         legend_color[i] = plotting.team_color(drvs[i]['Team'])
     patch = [mpatches.Patch(color=legend_color[i], label=legend[i]) for i in range(len(legend))]
-    print(patch)
+    # print(patch)
     for i in range(len(segments) - 1):
         distance = [value for value in (np.arange(segments[i], segments[i + 1], sector_point))]
         X = splines['Space/X'][time_differance[i]](distance)
@@ -403,14 +414,14 @@ def plot_driver_tire_data(driver_list, laps):
     drvs = data_list(driver_list, laps, 'all')
     if len(drvs) > 1:
         print("WIP: in plot_driver_tire_data: only one driver taken into account:")
-
+    print(int(max(pd.unique(drvs[0]['Stint']))))
     # hard = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'HARD', drvs[0]['IsAccurate'] == True)]
     # medium = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'MEDIUM', drvs[0]['IsAccurate'] == True)]
     # soft = drvs[0].loc[np.logical_and(drvs[0]['Compound'] == 'SOFT', drvs[0]['IsAccurate'] == True)]
     # print(max(pd.unique(drvs[0]['Stint'])))
     fig, ax = plt.subplots(2)
     # print(np.unique(drvs[0]['Stint']))
-    for i in range(max(pd.unique(drvs[0]['Stint']))):
+    for i in range(int(max(pd.unique(drvs[0]['Stint'])))):
         current_stint = drvs[0].loc[np.logical_and(drvs[0]['Stint'] == i+1, drvs[0]['IsAccurate'] == True)].pick_quicklaps(threshold=1.07)
         if not current_stint.empty:
             # print(i+1)
@@ -447,6 +458,7 @@ def plot_driver_tire_data(driver_list, laps):
             ax[1].plot(x,y,'-',color=color)
     fig.set_size_inches(11.5, 7)
     plt.draw()
+    plt.show()
 
     return 0
 
@@ -466,8 +478,8 @@ def session_plot(driver_list, laps):
     x = np.linspace(min(y['LapNumber']), max(y['LapNumber']),100)
     lookup = np.poly1d(lookup)
     y = lookup(x)
-    # ax.plot(x,y)
-    # plt.show()
+    plt.plot(x,y)
+    plt.show()
 
 def tire_data():
 

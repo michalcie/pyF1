@@ -14,7 +14,7 @@ There was no point loss for Max in championship battle, however confusion arose 
 That were very unsupportive towards Red Bull Junior Driver Program protege
 """
 driver = 'VER'
-laps, event = tt.crate_event(2021, 'USA', 'Q') #No mistake as of now 13.11.2021 'USA' returns Mexico City GP - issue#23
+laps, event = tt.crate_event(2021, 'Mexico', 'Q') #No mistake as of now 13.11.2021 'USA' returns Mexico City GP - issue#23
 Ver_Q_laps = tt.data_list(['VER'], laps, 'all')
 print("Max Qualifying Lap Time:")
 print(Ver_Q_laps[0]['LapTime'])
@@ -45,7 +45,10 @@ Green: Where Max was Tsunoda'd
 Red: Subsequent mistakes
 """
 
+""" Overlay two laps in question """
 fig, ax = tt.overlay_laps(tsunodad_slice, fastest_slice, "Was Max Tsunoda'd", 'Fastest lap', "Tsunoda'd lap")
+
+""" Mark important parts """
 distance_a = 2870
 distance_b = 2990
 ax[1].axvspan(distance_a, distance_b, facecolor = 'g', alpha = 0.5)
