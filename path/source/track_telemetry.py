@@ -26,44 +26,6 @@ def crate_event(year, gp, session):
     return laps, event
 
 
-def overlay_drv(drv1, drv2):
-    ### Description:
-    ###     DEPRECATED. To be removed
-    ###     Replaced by overlay_laps()
-    ### input:
-    ###     drv1, drv2: <class 'fastf1.core.Lap'>
-    ### output:
-    ###     none, plot.show()
-
-    fig, ax = plt.subplots(2)
-    fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', drv1.Driver, ' vs ', drv2.Driver)))
-    fig.suptitle("".join((drv1.Driver, ' vs. ', drv2.Driver)))
-    ax[0].plot(drv1.telemetry['Distance'], drv1.telemetry['Speed'],
-               color=plotting.team_color(drv1['Team']),
-               label="".join((drv1.Driver, ' ', str(drv1.LapTime).split(':', 1)[1][:-3])))
-    ax[0].plot(drv2.telemetry['Distance'], drv2.telemetry['Speed'],
-               color=plotting.team_color(drv2['Team']),
-               label="".join((drv2.Driver, ' ', str(drv2.LapTime).split(':', 1)[1][:-3])))
-    ax[0].set_xlim([50, None])
-    ax[0].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
-    # legend_x = 1.1
-    # legend_y = 0.75
-    ax[0].legend(loc='upper center',
-                 bbox_to_anchor=(0.8, 0.15),
-                 shadow=False,
-                 ncol=2)
-    ax[0].set_xlabel('Lap Distance [m]')
-    ax[0].set_ylabel('Velocity [kmh]')
-    delta,ref_tel,dump2 = utils.delta_time(drv2, drv1)
-    ax[1].plot(ref_tel['Distance'], delta,
-               '--', color=plotting.team_color(drv1['Team']))
-    ax[1].set_xlabel('Lap Distance [m]')
-    ax[1].set_ylabel("".join(('Relative time delta\n(', drv1.Driver, ' to ', drv2.Driver, ')')))
-    fig.set_size_inches(11.5, 7)
-    ax[1].set_xlim([50, None])
-    ax[1].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
-    plt.show()
-
 def find_nearest(array, values):
     ### Description:
     ### input:
@@ -171,7 +133,7 @@ def overlay_laps(lap1, lap2, title, legl1, legl2):
     ### output:
     ###     matplotlib fig, ax
     ###     plt.show() needed
-    fig, ax = plt.subplots(2)
+    fig, ax = plt.subplots(4)
     fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', legl1, ' vs ', legl2)))
     fig.suptitle("".join((legl1, ' vs. ', legl2)))
     ax[0].plot(lap1.telemetry['Distance'], lap1.telemetry['Speed'],
@@ -195,10 +157,30 @@ def overlay_laps(lap1, lap2, title, legl1, legl2):
                '--', color=plotting.team_color(lap1['Team']))
     ax[1].set_xlabel('Lap Distance [m]')
     ax[1].set_ylabel("".join(('Relative time delta\n(', lap1.Driver, ' to ', lap2.Driver, ')')))
-    fig.set_size_inches(11.5, 7)
     ax[1].set_xlim([50, None])
     ax[1].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
+    ax[2].plot(lap1.telemetry['Distance'], lap1.telemetry['Throttle'],
+               color=plotting.team_color(lap1['Team']),
+               label="".join((lap1.Driver, ' ', str(lap1.LapTime).split(':', 1)[1][:-3])))
+    ax[2].plot(lap2.telemetry['Distance'], lap2.telemetry['Throttle'],
+              color=plotting.team_color(lap2['Team']),
+              label="".join((lap1.Driver, ' ', str(lap2.LapTime).split(':', 1)[1][:-3])))
+    ax[2].set_xlim([50, None])
+    ax[2].set_xlabel('Lap Distance [m]')
+    ax[2].set_ylabel('Throttle [%]')
+    ax[2].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
+    ax[3].plot(lap1.telemetry['Distance'], lap1.telemetry['Brake'],
+              color=plotting.team_color(lap1['Team']),
+              label="".join((lap1.Driver, ' ', str(lap1.LapTime).split(':', 1)[1][:-3])))
+    ax[3].plot(lap2.telemetry['Distance'], lap2.telemetry['Brake'],
+             color=plotting.team_color(lap2['Team']),
+             label="".join((lap1.Driver, ' ', str(lap2.LapTime).split(':', 1)[1][:-3])))
+    ax[3].set_xlim([50, None])
+    ax[3].set_xlabel('Lap Distance [m]')
+    ax[3].set_ylabel('Brake [%]')
+    ax[3].grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
     # plt.show()
+    fig.set_size_inches(11.5, 7)
     return fig, ax
 
 def index(drv):

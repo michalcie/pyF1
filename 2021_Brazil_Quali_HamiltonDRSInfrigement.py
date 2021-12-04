@@ -45,26 +45,26 @@ Using multiple good laps from qualifying session with given threshold
 Using same Speed Trap at the Start/Finish line and
 Using telemetry data from same laps - maximum speed achieved during the lap taken into account
 """
-# for n in range(len(drivers_list)):
-#     list = tt.data_list(drivers_list[n], laps, 'all')
-#     spdFL = []
-#     meanFL = []
-#     spdT = []
-#     meanT = []
-#     for i in range(len(list)):
-#         spdFL.append(list[i].pick_accurate().pick_quicklaps(threshold=1.01)['SpeedFL'])
-#         meanFL.append(np.mean(spdFL))
-#         # print(list[i].iloc[0])
-#         telemetry_data = list[i].pick_accurate().pick_quicklaps(threshold=1.01)
-#         for j in range(len(telemetry_data)):
-#             spdT.append(telemetry_data.iloc[j].telemetry['Speed'].max())
-#             # print(spdT)
-#         meanT.append(np.mean(spdT))
-#         spdT = []
-#         spdFL = []
-#     print(list[0]['Team'].iloc[0])
-#     print('From Telemetry:     ',-np.round_(np.diff(meanT)[0], decimals = 2), 'km/h')
-#     print('From FL Speed Trap: ',-np.round_(np.diff(meanFL)[0], decimals=2), 'km/h')
+for n in range(len(drivers_list)):
+    list = tt.data_list(drivers_list[n], laps, 'all')
+    spdFL = []
+    meanFL = []
+    spdT = []
+    meanT = []
+    for i in range(len(list)):
+        spdFL.append(list[i].pick_accurate().pick_quicklaps(threshold=1.01)['SpeedFL'])
+        meanFL.append(np.mean(spdFL))
+        # print(list[i].iloc[0])
+        telemetry_data = list[i].pick_accurate().pick_quicklaps(threshold=1.01)
+        for j in range(len(telemetry_data)):
+            spdT.append(telemetry_data.iloc[j].telemetry['Speed'].max())
+            # print(spdT)
+        meanT.append(np.mean(spdT))
+        spdT = []
+        spdFL = []
+    print(list[0]['Team'].iloc[0])
+    print('From Telemetry:     ',-np.round_(np.diff(meanT)[0], decimals = 2), 'km/h')
+    print('From FL Speed Trap: ',-np.round_(np.diff(meanFL)[0], decimals=2), 'km/h')
 
 """
 Seems that Hamilton gains more straight line speed than Bottas, but can it be due to setup? Hamilton is to take
@@ -90,12 +90,12 @@ for i in range(len(list)):
     maxspeeds.append(speed_off)
     print('Speed gained with DRS: ')
     print(speed_diff, 'km/h')
-    print("Speed with DRS off:")
+    print("Speed on DRS off:")
     print(speed_off, 'km/h')
     print(' ')
 
 print('Gained Speed diffenace between drivers:',(np.diff(speeds)[0]), 'km/h')
-print('Top Speed differance between drivers:', np.diff(maxspeeds)[0],'km\h')
+print('Top Speed differance between drivers:', np.diff(maxspeeds)[0],'km/h')
 
 
 """
