@@ -49,7 +49,6 @@ failed_r = 0
 try:
     with HiddenPrints():
         laps_FS1, event_FS1 = tt.crate_event(2021, 'Mexico', 'Q')
-
     print("ID: CE_1 \t passed")
     passed_f = passed_f + 1
 except:
