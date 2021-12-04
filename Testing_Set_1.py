@@ -115,6 +115,18 @@ except:
     failed_f = failed_f + 1
 
 
+""" HIS_1 History Data: Season 2021 """
+
+try:
+    with HiddenPrints():
+        exec(open("path/source/history_data.py").read())
+    print("ID: HIS_1 \t passed")
+    passed_f = passed_f + 1
+except:
+    print("ID: HIS_1 \t failed")
+    failed_f = failed_f + 1
+
+
 """ Heavy WIP """
 # try:
 #     with HiddenPrints():
