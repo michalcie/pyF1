@@ -147,7 +147,7 @@ print("#Regression Tests")
 
 try:
     with HiddenPrints():
-        exec(open("2021_Mexico_Qual_WasMaxTsunodad.py").read())
+        exec(open("Analysis/Mexico2021/2021_Mexico_Qual_WasMaxTsunodad.py").read())
     print("ID: REG_1 \t passed")
     passed_r = passed_r + 1
 except:
@@ -157,7 +157,7 @@ except:
 
 try:
     with HiddenPrints():
-        exec(open("2021_Brazil_Race_HamiltonsCharge.py").read())
+        exec(open("Analysis/Brazil2021/2021_Brazil_Race_HamiltonsCharge.py").read())
     print("ID: REG_2 \t passed")
     passed_r = passed_r + 1
 except:
@@ -167,7 +167,7 @@ except:
 
 try:
     with HiddenPrints():
-        exec(open("2021_Brazil_QSandRACE_HamiltonsCharge.py").read())
+        exec(open("Analysis/Brazil2021/2021_Brazil_QSandRACE_HamiltonsCharge.py").read())
     print("ID: REG_3 \t passed")
     passed_r = passed_r + 1
 except:
