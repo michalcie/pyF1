@@ -312,7 +312,7 @@ def search(name, drvs):
     return output[0]
 
 
-def overlay_map_plot(drvs, segments, time_differance, splines):
+def overlay_map_plot(drvs, segments, time_differance, splines, **kwargs):
     ### Description:
     ### input:
     ### output:
@@ -335,7 +335,13 @@ def overlay_map_plot(drvs, segments, time_differance, splines):
         distance = [value for value in (np.arange(segments[i], segments[i + 1], sector_point))]
         X = splines['Space/X'][time_differance[i]](distance)
         Y = splines['Space/Y'][time_differance[i]](distance)
-        ax.plot(X, Y, color=plotting.team_color(search(time_differance[i], drvs)))
+        if len(kwargs) > 0 and 'rotate' in kwargs:
+            if kwargs['rotate'] == 0:
+                ax.plot(X, Y, color=plotting.team_color(search(time_differance[i], drvs)))
+            if kwargs['rotate'] == 1:
+                ax.plot(Y, X, color=plotting.team_color(search(time_differance[i], drvs)))
+        else:
+            ax.plot(X, Y, color=plotting.team_color(search(time_differance[i], drvs)))
 
     ax.axes.set_aspect('equal')
     ax.set_xlabel("X coordinate")
@@ -346,7 +352,7 @@ def overlay_map_plot(drvs, segments, time_differance, splines):
     plt.show()
 
 
-def overlay_map_multi(driver_list, session):
+def overlay_map_multi(driver_list, session, **kwargs):
     ### Description:
     ### input:
     ### output:
@@ -361,7 +367,17 @@ def overlay_map_multi(driver_list, session):
     segments_time = segment_times(splines, segments, drvs)
     time_differance = fastest_segments(segments_time)
     limits = plot_limits(drvs, idx)
-    overlay_map_plot(drvs, segments, time_differance, splines)
+    if len(kwargs) > 0 and 'rotate' in kwargs:
+        print(kwargs)
+        print(kwargs['rotate'])
+        if kwargs['rotate'] == 1:
+            rotated = 1
+            overlay_map_plot(drvs, segments, time_differance, splines, rotate = rotated)
+        if kwargs['rotate'] == 0:
+            rotated = 0
+            overlay_map_plot(drvs, segments, time_differance, splines, rotate = rotated)
+    else:
+        overlay_map_plot(drvs, segments, time_differance, splines)
 
 
 def tire_comparison():
