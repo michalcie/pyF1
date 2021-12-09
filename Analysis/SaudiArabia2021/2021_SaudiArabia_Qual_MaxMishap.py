@@ -33,9 +33,8 @@ HAM = laps2.pick_driver('HAM')
 HAM = HAM[HAM['LapNumber'] == CollisionLap].iloc[0]
 
 fig, ax = tt.overlay_laps_rework(MAX, HAM, 'Collision', 'Max ', 'Hamilton ',
-            graph = ['speed', 'throttle', 'brake',
-            'longAcc'], start = 5000, end = 5600,
-            highlight = [5420, 5470])
+            graph = ['speed', 'throttle', 'brake', 'longAcc'],
+            start = 5000, end = 5600, highlight = [5420, 5470])
 plt.show()
 
 

@@ -260,12 +260,7 @@ def overlay_laps_rework(lap1, lap2, title, legl1, legl2, **kwargs):
     ###     matplotlib fig, ax
     ###     plt.show() needed
 
-    fig, ax = plt.subplots(len(kwargs['graph']))
-    fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', legl1, ' vs ', legl2)))
-    fig.suptitle("".join((legl1, ' vs. ', legl2)))
-    fig.set_size_inches(11.5, 7)
-    axes_counter = 0
-
+    # fig, ax = plt.subplots(len(kwargs['graph']))
     if 'start' in kwargs:
         start_distance = kwargs['start']
     else:
@@ -283,85 +278,119 @@ def overlay_laps_rework(lap1, lap2, title, legl1, legl2, **kwargs):
         highlight_start = None
         highlight_end = None
 
+    if 'graph' in kwargs:
+        ratios = [1]*len(kwargs['graph'])
+        ratios[0] = 2
+        fig, ax = plt.subplots(nrows=len(kwargs['graph']), ncols=1, gridspec_kw={'height_ratios':ratios})
+        fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', legl1, ' vs ', legl2)))
+        fig.suptitle("".join((legl1, ' vs. ', legl2)))
+        fig.set_size_inches(11.5, 7)
+        axes_counter = 0
 
-    if 'speed' in kwargs['graph']:
 
-        ax = plot_overlay_axes(ax, axes_counter, lap1, 'Speed')
-        ax = plot_overlay_axes(ax, axes_counter, lap2, 'Speed')
-        ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+        if 'speed' in kwargs['graph']:
+
+            ax = plot_overlay_axes(ax, axes_counter, lap1, 'Speed')
+            ax = plot_overlay_axes(ax, axes_counter, lap2, 'Speed')
+            ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+                                        'Velocity [kmh]', start_distance, end_distance)
+            ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
+            ax[axes_counter].legend(loc='upper center',
+                         bbox_to_anchor=(0.8, 0.15),
+                         shadow=False,
+                         ncol=2)
+            axes_counter = axes_counter + 1
+
+        if 'delta' in kwargs['graph']:
+            delta,ref_tel,dump2 = utils.delta_time(lap2, lap1)
+            ax[axes_counter].plot(ref_tel['Distance'], delta,
+                       '--', color=plotting.team_color(lap1['Team']))
+
+            ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+                                        "".join(('Relative time delta\n(', lap1.Driver,
+                                        ' to ', lap2.Driver, ')')), start_distance, end_distance)
+            ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
+            axes_counter = axes_counter + 1
+
+
+        if 'throttle' in kwargs['graph']:
+
+            ax = plot_overlay_axes(ax, axes_counter, lap1, 'Throttle')
+            ax = plot_overlay_axes(ax, axes_counter, lap2, 'Throttle')
+            ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+                                        'Throttle [%]', start_distance, end_distance)
+            ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
+            axes_counter = axes_counter + 1
+
+        if 'brake' in kwargs['graph']:
+
+            ax = plot_overlay_axes(ax, axes_counter, lap1, 'Brake')
+            ax = plot_overlay_axes(ax, axes_counter, lap2, 'Brake')
+            ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+                                        'Brake [%]', start_distance, end_distance)
+            ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
+            axes_counter = axes_counter + 1
+
+
+        if 'DistanceToDriverAhead' in kwargs['graph']:
+
+            ax = plot_overlay_axes(ax, axes_counter, lap1, 'DistanceToDriverAhead')
+            ax = plot_overlay_axes(ax, axes_counter, lap2, 'DistanceToDriverAhead')
+            ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+                                        'DistanceToDriverAhead', start_distance, end_distance)
+            ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
+            axes_counter = axes_counter + 1
+
+        if 'longAcc' in kwargs['graph']:
+
+            Y = lap1.get_telemetry()['Speed'].diff()/3.6/lap1.get_telemetry()['Time'].dt.total_seconds().diff()
+            ax[axes_counter].plot(lap1.get_telemetry()['Distance'], (Y/9.81).rolling(5, min_periods=1).mean(),
+                    color=plotting.team_color(lap1['Team']),
+                    label="".join((lap1.Driver, ' ', str(lap1.LapTime).split(':', 1)[1][:-3])))
+
+            Y = lap2.get_telemetry()['Speed'].diff()/3.6/lap2.get_telemetry()['Time'].dt.total_seconds().diff()
+            ax[axes_counter].plot(lap2.get_telemetry()['Distance'], (Y/9.81).rolling(5, min_periods=1).mean(),
+                    color=plotting.team_color(lap2['Team']),
+                    label="".join((lap2.Driver, ' ', str(lap2.LapTime).split(':', 1)[1][:-3])))
+
+            ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+                                        'Long Acc [G]', start_distance, end_distance)
+            ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
+            axes_counter = axes_counter + 1
+
+        if 'gear' in kwargs['graph']:
+
+            ax = plot_overlay_axes(ax, axes_counter, lap1, 'nGear')
+            ax = plot_overlay_axes(ax, axes_counter, lap2, 'nGear')
+            ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+                                        'Gear', start_distance, end_distance)
+            ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
+            axes_counter = axes_counter + 1
+    else:
+        fig, ax = plt.subplots(nrows=2, ncols=1, gridspec_kw={'height_ratios':[2, 1]})
+        fig.canvas.set_window_title("".join(('Driver overlay: Hot Lap: ', legl1, ' vs ', legl2)))
+        fig.suptitle("".join((legl1, ' vs. ', legl2)))
+        fig.set_size_inches(11.5, 7)
+        ax = plot_overlay_axes(ax, 0, lap1, 'Speed')
+        ax = plot_overlay_axes(ax, 0, lap2, 'Speed')
+        ax = plot_overlay_axes_settings(ax, 0, 'Lap Distance [m]',
                                     'Velocity [kmh]', start_distance, end_distance)
-        ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
-        ax[axes_counter].legend(loc='upper center',
+        ax = overlay_highlight(ax, 0, highlight_start, highlight_end)
+        ax[0].legend(loc='upper center',
                      bbox_to_anchor=(0.8, 0.15),
                      shadow=False,
                      ncol=2)
-        axes_counter = axes_counter + 1
 
-    if 'delta' in kwargs['graph']:
         delta,ref_tel,dump2 = utils.delta_time(lap2, lap1)
-        ax[axes_counter].plot(ref_tel['Distance'], delta,
+        ax[1].plot(ref_tel['Distance'], delta,
                    '--', color=plotting.team_color(lap1['Team']))
 
-        ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
+        ax = plot_overlay_axes_settings(ax, 1, 'Lap Distance [m]',
                                     "".join(('Relative time delta\n(', lap1.Driver,
                                     ' to ', lap2.Driver, ')')), start_distance, end_distance)
-        ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
-        axes_counter = axes_counter + 1
+        ax = overlay_highlight(ax, 1, highlight_start, highlight_end)
 
 
-    if 'throttle' in kwargs['graph']:
-
-        ax = plot_overlay_axes(ax, axes_counter, lap1, 'Throttle')
-        ax = plot_overlay_axes(ax, axes_counter, lap2, 'Throttle')
-        ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
-                                    'Throttle [%]', start_distance, end_distance)
-        ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
-        axes_counter = axes_counter + 1
-
-    if 'brake' in kwargs['graph']:
-
-        ax = plot_overlay_axes(ax, axes_counter, lap1, 'Brake')
-        ax = plot_overlay_axes(ax, axes_counter, lap2, 'Brake')
-        ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
-                                    'Brake [%]', start_distance, end_distance)
-        ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
-        axes_counter = axes_counter + 1
-
-
-    if 'DistanceToDriverAhead' in kwargs['graph']:
-
-        ax = plot_overlay_axes(ax, axes_counter, lap1, 'DistanceToDriverAhead')
-        ax = plot_overlay_axes(ax, axes_counter, lap2, 'DistanceToDriverAhead')
-        ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
-                                    'DistanceToDriverAhead', start_distance, end_distance)
-        ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
-        axes_counter = axes_counter + 1
-
-    if 'longAcc' in kwargs['graph']:
-
-        Y = lap1.get_telemetry()['Speed'].diff()/3.6/lap1.get_telemetry()['Time'].dt.total_seconds().diff()
-        ax[axes_counter].plot(lap1.get_telemetry()['Distance'], (Y/9.81).rolling(5, min_periods=1).mean(),
-                color=plotting.team_color(lap1['Team']),
-                label="".join((lap1.Driver, ' ', str(lap1.LapTime).split(':', 1)[1][:-3])))
-
-        Y = lap2.get_telemetry()['Speed'].diff()/3.6/lap2.get_telemetry()['Time'].dt.total_seconds().diff()
-        ax[axes_counter].plot(lap2.get_telemetry()['Distance'], (Y/9.81).rolling(5, min_periods=1).mean(),
-                color=plotting.team_color(lap2['Team']),
-                label="".join((lap2.Driver, ' ', str(lap2.LapTime).split(':', 1)[1][:-3])))
-
-        ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
-                                    'Long Acc [G]', start_distance, end_distance)
-        ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
-        axes_counter = axes_counter + 1
-
-    if 'gear' in kwargs['graph']:
-
-        ax = plot_overlay_axes(ax, axes_counter, lap1, 'nGear')
-        ax = plot_overlay_axes(ax, axes_counter, lap2, 'nGear')
-        ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
-                                    'Gear', start_distance, end_distance)
-        ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
-        axes_counter = axes_counter + 1
 
     return fig, ax
 
