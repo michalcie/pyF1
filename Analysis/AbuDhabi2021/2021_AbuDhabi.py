@@ -2,6 +2,7 @@ from path.source import track_telemetry as tt
 from matplotlib import pyplot as plt
 import numpy as np
 
+
 laps, event = tt.crate_event(2021, 'AbuDhabi', 'Q')
 
 """ To tow or not to tow
@@ -44,18 +45,18 @@ HAM_best = HAM.pick_fastest()
 PER_best = PER.pick_fastest()
 
 
-fig, ax = tt.overlay_laps(MAX_towed, HAM_best, 'To Tow: Best Lap Comparison', 'Max', 'Hamilton ',
-            graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
-plt.show()
-
-
-fig, ax = tt.overlay_laps(MAX_notow, HAM_best, 'Not to tow lap comparison Q2/Q3', 'Max - Q2', 'Hamilton - Q3 - best',
-            graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
-plt.show()
-
-fig, ax = tt.overlay_laps(MAX_notow, HAM_notow, 'Not to tow lap comparison Q2/Q1', 'Max - Q2', 'Hamilton - Q1',
-            graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
-plt.show()
+# fig, ax = tt.overlay_laps(MAX_towed, HAM_best, 'To Tow: Best Lap Comparison', 'Max', 'Hamilton ',
+#             graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
+# plt.show()
+#
+#
+# fig, ax = tt.overlay_laps(MAX_notow, HAM_best, 'Not to tow lap comparison Q2/Q3', 'Max - Q2', 'Hamilton - Q3 - best',
+#             graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
+# plt.show()
+#
+# fig, ax = tt.overlay_laps(MAX_notow, HAM_notow, 'Not to tow lap comparison Q2/Q1', 'Max - Q2', 'Hamilton - Q1',
+#             graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
+# plt.show()
 
 print('#############################')
 print(' ')
@@ -108,4 +109,39 @@ print('Lewis notow:')
 print(HAM_notow[['Sector1Time','Sector2Time','Sector3Time']])
 
 drivers = ['HAM', 'VER', 'NOR']
-tt.overlay_map_multi(drivers, laps, rotate = 1)
+# tt.overlay_map_multi(drivers, laps, rotate = 1)
+
+
+"""
+RACE
+Checo is a legend L20
+"""
+
+laps, event = tt.crate_event(2021, 'AbuDhabi', 'R')
+
+VER = laps.pick_driver('VER')
+VER = VER[VER['LapNumber'] == 20].iloc[0]
+HAM = laps.pick_driver('HAM')
+HAM = HAM[HAM['LapNumber'] == 20].iloc[0]
+
+
+fig, ax = tt.overlay_laps(VER, HAM, 'Checo is a legend - L20', 'Max', 'Hamilton ',
+            graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
+plt.show()
+
+VER = laps.pick_driver('VER')
+VER = VER[VER['LapNumber'] == 21].iloc[0]
+HAM = laps.pick_driver('HAM')
+HAM = HAM[HAM['LapNumber'] == 21].iloc[0]
+
+
+fig, ax = tt.overlay_laps(VER, HAM, 'Checo is a legend - L21', 'Max', 'Hamilton ',
+            graph = ['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
+plt.show()
+
+
+"""
+Max VSC stop gain
+Hard tire pushing and long term performance
+23L tire age differance
+"""
