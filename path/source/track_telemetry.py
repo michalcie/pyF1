@@ -350,7 +350,7 @@ def overlay_laps(lap1, lap2, title, legl1, legl2, **kwargs):
             ax = plot_overlay_axes(ax, axes_counter, lap1, 'DistanceToDriverAhead')
             ax = plot_overlay_axes(ax, axes_counter, lap2, 'DistanceToDriverAhead')
             ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
-                                        'DistanceToDriverAhead', start_distance, end_distance)
+                                        'DistanceToDriverAhead [m]', start_distance, end_distance)
             ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
             axes_counter = axes_counter + 1
 
@@ -797,3 +797,37 @@ def tire_by_lap(session, event):
     plt.show()
 
     return 0
+
+
+def plot_cumulative_time(laps, driver_list, ref_driver):
+
+    ref = laps.pick_driver(ref_driver)
+    ref2 = ref
+    ref = ref['LapTime'].fillna(ref['Time'] - ref['LapStartTime']).cumsum()
+    ref = ref.dt.total_seconds().reset_index(drop=True)
+
+    fig, ax = plt.subplots(1)
+    fig.canvas.set_window_title("".join(('Race Time Gap: Referance to ', ref_driver)))
+    fig.suptitle("".join(('Referance to ', ref_driver)))
+    fig.set_size_inches(11.5, 7)
+
+    for driver in driver_list:
+        driver = laps.pick_driver(driver)
+        lapTimeCumsum = lapTimeCumsum = driver['LapTime'].fillna(driver['Time'] - driver['LapStartTime']).cumsum()
+        print(driver['Driver'].iloc[0])
+        print(lapTimeCumsum.iloc[-1])
+        driver_cumsum = lapTimeCumsum.dt.total_seconds().reset_index(drop=True)
+        cumsumDiff = ref - driver_cumsum
+        ax.plot(cumsumDiff,
+                   color=plotting.team_color(driver['Team'].iloc[0]),
+                   label="".join((driver.Driver.iloc[0])))
+
+    ax.plot(ref - ref,color=plotting.team_color(ref2['Team'].iloc[0]),
+                label="".join(ref2['Driver'].iloc[0]))
+    ax.grid(which = 'both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
+    ax.legend(loc='center left',bbox_to_anchor=(1.0, 0.5))
+    ax.set_xlabel("Race Laps")
+    ax.set_ylabel("".join(('Gap to ', ref2['Driver'].iloc[0],' [s]')))
+    plt.show()
+
+    return fig, ax
