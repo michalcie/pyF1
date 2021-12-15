@@ -5,6 +5,7 @@ from fastf1 import plotting
 from fastf1 import utils
 from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches
+from matplotlib.patches import Ellipse
 from scipy import interpolate
 import os
 import joypy
@@ -828,6 +829,17 @@ def plot_cumulative_time(laps, driver_list, ref_driver):
     ax.legend(loc='center left',bbox_to_anchor=(1.0, 0.5))
     ax.set_xlabel("Race Laps")
     ax.set_ylabel("".join(('Gap to ', ref2['Driver'].iloc[0],' [s]')))
-    plt.show()
+    # plt.show()
 
     return fig, ax
+
+def annotation(ax, comment_list):
+    alpha = 0.65
+    for comment in comment_list:
+        el = Ellipse(comment[1], comment[2], comment[3], angle=comment[4], edgecolor='white', linestyle=':',
+                    linewidth = 1.5, facecolor = 'none', alpha = alpha)
+        ax.annotate(comment[0], xy=comment[1], xytext=comment[5],size=10,
+                            arrowprops=dict(arrowstyle="->",patchB=el, color='white',linewidth=1.5));
+        ax.add_patch(el)
+
+    return ax
