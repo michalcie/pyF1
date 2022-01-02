@@ -1,8 +1,9 @@
-from path.source import track_telemetry as tt
-from matplotlib import pyplot as plt
-import sys, os
 import logging
+import os
+import sys
 
+from matplotlib import pyplot as plt
+from path.source import track_telemetry as tt
 
 #############################################################
 
