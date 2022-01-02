@@ -363,12 +363,15 @@ def overlay_map_multi(driver_list, session, **kwargs):
         output = [[None] * size for j in range(3)]
 
         for i in range(size):
+            # noinspection PyTypeChecker
             output[0][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver],
                                 'Distance',
                                 'Time')
+            # noinspection PyTypeChecker
             output[1][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver],
                                 'Distance',
                                 'X')
+            # noinspection PyTypeChecker
             output[2][i] = spln(drvs[i], idx['Index zero'][drvs[i].Driver], idx['Index omega'][drvs[i].Driver],
                                 'Distance',
                                 'Y')
@@ -722,8 +725,7 @@ def track_status(drv_lap, type, ax, text_posy, text_ang):
             a.append(c)
         c = c + 1
 
-    boundary = []
-    boundary.append([])
+    boundary = [[]]
     boundary_index = 0
     if len(a) > 0:
         for i in range(len(a)):
@@ -733,9 +735,9 @@ def track_status(drv_lap, type, ax, text_posy, text_ang):
                 boundary[boundary_index].append(temp)
 
             if i > 0:
-                if (a[i] == temp + 1):
+                if a[i] == temp + 1:
                     temp = a[i]
-                if boundary[boundary_index] == []:
+                if not boundary[boundary_index]:
                     boundary[boundary_index].append(temp - 1)
 
                 if (a[i] > temp + 1) or i == len(a) - 1:
