@@ -7,16 +7,16 @@ Max mishap on an superbly quick lap in Saudi Arabia Quali - Max hit wall in last
 turn forfeiting any chance on pole and damaging car
 """
 #
-drivers = ['VER', 'HAM']
-laps, event = tt.crate_event(2021, 'SaudiArabia', 'Q')
-
-MAX = laps.pick_driver('VER').loc[18] # L18 is Final Lap Max Did in Q
-LEWIS = laps.pick_driver('HAM').pick_fastest()
-
-MAX['LapTime'] = LEWIS['LapTime'] #setting a dummy as Max had no time (NaT) this lap
-
-tt.overlay_laps(MAX, LEWIS, 'Max Mishap', 'Max Final Lap', 'Hamilton Fastest')
-tt.overlay_map_multi(drivers, laps, rotate = 1)
+# drivers = ['VER', 'HAM']
+# laps, event = tt.crate_event(2021, 'SaudiArabia', 'Q')
+#
+# MAX = laps.pick_driver('VER').loc[18] # L18 is Final Lap Max Did in Q
+# LEWIS = laps.pick_driver('HAM').pick_fastest()
+#
+# MAX['LapTime'] = LEWIS['LapTime'] #setting a dummy as Max had no time (NaT) this lap
+#
+# tt.overlay_laps(MAX, LEWIS, 'Max Mishap', 'Max Final Lap', 'Hamilton Fastest')
+# tt.overlay_map_multi(drivers, laps, rotate = 1)
 
 """
 Collision during race between Max and Lewis
@@ -25,17 +25,27 @@ L37
 
 laps2, event2 = tt.crate_event(2021, 'SaudiArabia', 'R')
 
-CollisionLap = 37
+# CollisionLap = 37
+#
+# MAX = laps2.pick_driver('VER')
+# MAX = MAX[MAX['LapNumber'] == CollisionLap].iloc[0]
+# HAM = laps2.pick_driver('HAM')
+# HAM = HAM[HAM['LapNumber'] == CollisionLap].iloc[0]
+#
+# fig, ax = tt.overlay_laps(MAX, HAM, 'Collision', 'Max ', 'Hamilton ',
+#             graph = ['speed', 'throttle', 'brake', 'longAcc'],
+#             start = 5000, end = 5600, highlight = [5420, 5470])
+# plt.show()
 
-MAX = laps2.pick_driver('VER')
-MAX = MAX[MAX['LapNumber'] == CollisionLap].iloc[0]
-HAM = laps2.pick_driver('HAM')
-HAM = HAM[HAM['LapNumber'] == CollisionLap].iloc[0]
+"""
 
-fig, ax = tt.overlay_laps(MAX, HAM, 'Collision', 'Max ', 'Hamilton ',
-            graph = ['speed', 'throttle', 'brake', 'longAcc'],
-            start = 5000, end = 5600, highlight = [5420, 5470])
-plt.show()
+"""
+
+drivers_list = ['VER','HAM','TSU','GAS','BOT','NOR']
+ref_driver = ['SAI']
+
+
+fig, ax = tt.plot_cumulative_time(laps2, drivers_list, ref_driver)
 
 
 """
@@ -49,5 +59,5 @@ Overlay map with laps instead of driver list - with not finnished laps - Max in 
 
 
 """
-Max Tire performance vs Lewis tire performance - Tire plus graph
+Max Tire performance vs Lewis tire performance - Tire plus graph //Max loosing the end due to tire life issues - Med vs Ham's Hard
 """
