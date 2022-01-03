@@ -20,7 +20,7 @@ real nerds.
 
 A brief demonstration of what it is all about.
 
-Let's see in which of the track Max Verstappen was faster than Lewis Hamilton
+Let's see in which part of the track Max Verstappen was faster than Lewis Hamilton
 during qualifying for Mexico GP 2021. We are comparing their fastest laps.  
 We need to use following code:
 
@@ -40,7 +40,7 @@ That seems easy, so let's try something different.
 Let's say that we would like to see how dominant was Red Bull over Mercedes in 2021 Mexico GP.
 We can use this short code:
 ```
-laps, event = tt.crate_event(2021, 'Mexico', 'R') #No mistake as of now 13.11.2021 'USA' returns Mexico City GP - issue#23
+laps, event = tt.crate_event(2021, 'Mexico', 'R') 
 drivers_list = ['VER', 'HAM', 'PER','BOT']
 tt.ridgeline(drivers_list, laps, "Mexico 2021 - How Fast was Redbull?", None, None, 0)
 ```
@@ -79,7 +79,7 @@ Some basic docs can be found in [documentation post](https://michalcie.github.io
 
 ## License
 
-Copyright 2022, michalcie.
+Copyright 2022, michalcie
 
 Built with theme gitbook  
 [![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://jekyll-themes.com/jekyll-gitbook/)
