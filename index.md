@@ -81,5 +81,5 @@ Some basic docs can be found in [documentation post](https://michalcie.github.io
 
 Copyright 2022, michalcie.
 
-Built with theme  
+Built with theme gitbook  
 [![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://jekyll-themes.com/jekyll-gitbook/)
