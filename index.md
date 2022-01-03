@@ -10,7 +10,7 @@ Checkout GitHub repository [ pyF1 repository](https://github.com/michalcie/pyF1)
 ## Intro
 
 pyF1 python project provides some functions that make analysing F1 a bit easier
-It uses telemetry and other data provided <<fastf1> by theOehrly> and presents it
+It uses telemetry and other data provided by [fastf1 by theOehrly](https://theoehrly.github.io/Fast-F1/fastf1.html) and presents it
 in a more digestible way. However, you can find here much more, as I will be posting
 here some F1 related analysis with source code available in the repo - something for
 real nerds. 
@@ -75,11 +75,11 @@ PER    81.52525
 BOT    83.579
 
 ## Documentation
-Some basic docs can be found in <doc> [ documentation post](https://michalcie.github.io/pyF1/pyf1/2022-01-02-Docs.html)  
+Some basic docs can be found in [documentation post](https://michalcie.github.io/pyF1/pyf1/2022-01-02-Docs.html)  
 
 ## License
 
-Copyright 2022 michalcie.
+Copyright 2022, michalcie.
 
 Built with theme  
 [![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://jekyll-themes.com/jekyll-gitbook/)
