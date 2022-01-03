@@ -2,6 +2,7 @@
 layout: home
 ---
 
+Index page  
 Make Jelly site have a GitBook look!
 
 ## Demo
