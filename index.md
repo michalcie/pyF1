@@ -75,11 +75,11 @@ PER    81.52525
 BOT    83.579
 
 ## Documentation
-Some basic docs can be found in <doc>[documentation post](https://michalcie.github.io/pyF1/pyf1/2022-01-02-Docs.html)
+Some basic docs can be found in <doc> [ documentation post](https://michalcie.github.io/pyF1/pyf1/2022-01-02-Docs.html)  
 
 ## License
 
 Copyright 2022 michalcie.
 
-Built with theme <gitbook>  
+Built with theme  
 [![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://jekyll-themes.com/jekyll-gitbook/)
