@@ -4,12 +4,12 @@ layout: home
 
 Something for F1 passionate. 
 
-Checkout GitHub repository  <GitHub repositoiry>  
+Checkout GitHub repository [ pyF1 repository](https://github.com/michalcie/pyF1)  
 ... or have a look at what it is used for <first post>
 
 ## Intro
 
-pyF1 python project provides some functions that makes analysing F1 a bit easier
+pyF1 python project provides some functions that make analysing F1 a bit easier
 It uses telemetry and other data provided <<fastf1> by theOehrly> and presents it
 in a more digestible way. However, you can find here much more, as I will be posting
 here some F1 related analysis with source code available in the repo - something for
@@ -45,14 +45,37 @@ drivers_list = ['VER', 'HAM', 'PER','BOT']
 tt.ridgeline(drivers_list, laps, "Mexico 2021 - How Fast was Redbull?", None, None, 0)
 ```
 
-The output is the following graph and console printout:
+The output is the following rigdeline  graph and console printout with basic statistical
+info about distribution (median, average, quantile) of all valid laps driven in the race:
 
 ![Merc vs RedBull](Analysis/Mexico2021/Race_Pace_MERvsRBR.png)
 
-> 
+> Median:  
+VER    80.5295  
+HAM    80.727  
+PER    81.151  
+BOT    82.7985  
+>
+> Average:  
+VER    80.681328  
+HAM    80.873143  
+PER    80.906313  
+BOT    82.481466  
+>  
+>Quantile 25:   
+VER    80.15575
+HAM    80.3195  
+PER    80.136  
+BOT    81.57325  
+>
+>Quantile 75:   
+VER    81.2125  
+HAM    81.414  
+PER    81.52525  
+BOT    83.579
 
 ## Documentation
-Some basic docs can be found in <doc> post
+Some basic docs can be found in <doc>[documentation post](https://michalcie.github.io/pyF1/pyf1/2022-01-02-Docs.html)
 
 ## License
 
