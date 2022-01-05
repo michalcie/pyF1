@@ -35,7 +35,8 @@ The output is a plot with track map where mini sectors are colored depending
 on who was faster.
 
 ![Map](Analysis/Mexico2021/Qual_Map_VERvsHAM.png)
-
+  
+    
 That seems easy, so let's try something different.
 Let's say that we would like to see how dominant was Red Bull over Mercedes in 2021 Mexico GP.
 We can use this short code:
@@ -80,6 +81,7 @@ Some basic docs can be found in [documentation post](https://michalcie.github.io
 ## License
 
 Copyright 2022, michalcie
+
 
 Built with theme gitbook  
 [![Jekyll Themes](https://img.shields.io/badge/featured%20on-JekyllThemes-red.svg)](https://jekyll-themes.com/jekyll-gitbook/)
