@@ -5,6 +5,7 @@ date: 2022-01-05
 category: pyF1
 layout: post
 ---
+
 Was Mex Verstappen Tsunoda'd on his last lap in qualifying for the Mexican GP as suggested by Christian Horner?
 On final lap Max wasn't able to improve, as Yuki Tsunoda had an off track right at the turn Max was arriving at.
 There were no yellow flags, but there was much confusion as Yuki caused Perez to go off track too.  
