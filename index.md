@@ -5,7 +5,7 @@ layout: home
 Something for F1 passionate. 
 
 Checkout GitHub repository [ pyF1 repository](https://github.com/michalcie/pyF1)  
-... or have a look at what it is used for <first post>
+... or have a look at what it is used for [Abu Dhabi 2021: To tow or not to tow](https://michalcie.github.io/pyF1/pyf1/2022-01-06-AbuDhabi-TowOrNotToTow.html) 
 
 ## Intro
 
