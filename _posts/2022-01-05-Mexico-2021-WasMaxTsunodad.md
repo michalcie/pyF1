@@ -1,5 +1,5 @@
 ---
-title: Mexico 2021 Was Max Tsunodad
+title: Mexico 2021 - Was Max Tsunodad?
 author: michalcie
 date: 2022-01-06
 category: pyF1
@@ -17,7 +17,7 @@ Mentioned event happened in Q3 on Max' 33rd lap in the session. Let's compare th
 
 ![](../Analysis/Mexico2021/Qual_Analysis_VerFastestLapvsTsunodad.png)
 
-In the green highlight the place on the track where Max was supposedly Tsunoda'd is shown. From relative delta we can judge that it costed Max just shy of 0.2s. However, even though he was still as fast as he was on his best lap to this point or even slightly gaining at the end of the straight. What cost him more are mistakes made later - braking for turn XX and lockup at the stadium.  
+In the green highlight the place on the track, turn 10, where Max was supposedly Tsunoda'd is shown. From relative delta we can judge that it costed Max just shy of 0.2s. However, even though he was still as fast as he was on his best lap to this point or even slightly gaining at the end of the straight. What cost him more are mistakes made later - braking for turn 12 and lockup at the stadium.  
 It is worth noting that in the previous big braking zones Max was also loosing some time comparing to his best lap. It seems very likely that Max was more distracted by chaos happening on the track than actually lost some big time.
 
 Let's also see how close was Max to Hamilton's P2 with 1:16.020.
