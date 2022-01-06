@@ -24,6 +24,8 @@ Let's also see how close was Max to Hamilton's P2 with 1:16.020.
 
 ![](../Analysis/Mexico2021/Qual_Overlay_HotLap_VERvsHAM.png)
 
-It quickly becomes clear how big advantage Mercedes has on the straights even at altitudes they are racing at in Mexico. In each of the straight there is about 0.2s to the benefit of Silver Arrows. It also became clear that almost exactly at the time it happened Max was at the lap that could give him P2 over Lewis Hamilton. 
+It quickly becomes clear how big advantage Mercedes has on the straights even at altitudes they are racing at in Mexico. In each of the straight there is about 0.2s to the benefit of Silver Arrows. But how close was Max on his final last lap?
   
-Comparing these two charts we can conclude that Yuki Tsunoda was guilty of a distraction, that if didn't happen, would close gap Max had to Lewis in the qualifying to the Mexican GP. 
+![](../Analysis/Mexico2021/2021_Mexico_Qual_HamvsVerTsunodad.png)
+
+Comparing these charts we can conclude that Yuki Tsunoda was guilty of a distraction, that if didn't happen, would close gap Max had to Lewis in the qualifying to the Mexican GP.  
