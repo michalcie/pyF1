@@ -10,7 +10,7 @@ Was Mex Verstappen Tsunoda'd on his last lap in qualifying for the Mexican GP as
 On final lap Max wasn't able to improve, as Yuki Tsunoda had an off track right at the turn Max was arriving at.
 There were no yellow flags, but there was much confusion as Yuki caused Perez to go off track too.  
 In the end here was no point loss for Max in championship battle, as went on to win the race, however confusion arose to Christian Horner's words, as they were very unsupportive for Red Bull Junior Driver Program protégé.  
-Did Yuki and Perez caused distraction to Max, as they were rejoining the track? do they actually cost him some time? How much?
+Do they actually cost him some time? How much?
 Let's answer that question.  
   
 Mentioned event happened in Q3 on Max' 33rd lap in the session. Let's compare this lap to his best lap - No. 30, which gave him third place on the grid for the race with time of 1:16.225.
