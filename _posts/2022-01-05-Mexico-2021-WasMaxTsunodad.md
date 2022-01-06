@@ -1,5 +1,5 @@
 ---
-title: Mexico 2021: Was Max Tsunoda'd?
+title: Mexico 2021 Was Max Tsunodad
 author: michalcie
 date: 2022-01-06
 category: pyF1
