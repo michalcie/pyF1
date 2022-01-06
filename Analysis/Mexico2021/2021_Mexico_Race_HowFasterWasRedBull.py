@@ -12,7 +12,7 @@ Red Bull seemes to have an edge over Mercedes in the race, Hamilton refered to t
 But how much quicker was Red Bull?
 """
 
-laps, event = tt.crate_event(2021, 'Mexico', 'R') #No mistake as of now 13.11.2021 'USA' returns Mexico City GP - issue#23
+laps, event = tt.crate_event(2021, 'Mexico', 'R')
 
 """Driver list should contain only finishers to ensure minimal number of valid laps """
 # drivers_list = ['VER', 'HAM', 'PER', 'GAS', 'LEC', 'SAI', 'VET', 'ALO', 'NOR', 'GIO', 'RIC']
