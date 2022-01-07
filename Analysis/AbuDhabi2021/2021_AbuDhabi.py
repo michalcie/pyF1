@@ -158,6 +158,21 @@ fig, ax = tt.overlay_laps(VER, HAM, 'Checo is a legend - L21', 'Max', 'Hamilton 
                           graph=['speed', 'delta', 'throttle', 'DistanceToDriverAhead'])
 plt.show()
 
+
+VER = laps.pick_driver('VER')
+temp = VER['LapTime'].iloc[1]
+VER = VER[VER['LapNumber'] == 1].iloc[0]
+VER['LapTime'] = temp
+HAM = laps.pick_driver('HAM')
+HAM = HAM[HAM['LapNumber'] == 1].iloc[0]
+HAM['LapTime'] = temp
+
+fig, ax = tt.overlay_laps(VER, HAM, 'Abu Dhabi - L1', 'Max', 'Hamilton ',
+                          graph=['speed', 'delta', 'throttle', 'DistanceToDriverAhead'],
+                          highlight=[2400, 2530])
+
+plt.show()
+
 """
 Max VSC stop gain
 """
