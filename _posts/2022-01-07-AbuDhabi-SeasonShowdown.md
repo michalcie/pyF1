@@ -33,31 +33,32 @@ Checo really help to get Max some advantage despite an early pitstop, but is see
 
 To breakdown the controversy we can use Race Control messages.
 
-```
-        2021-12-12 14:21:54:
-            Lap: 53
-            Category: "SafetyCar",
-            Status: "DEPLOYED",
-            Mode: "SAFETY CAR",
-            Message: "SAFETY CAR DEPLOYED"
-            
-        2021-12-12 14:27:55:
-            Lap: 56,
-            Category: "Other",
-            Message: "LAPPED CARS WILL NOT BE ALLOWED TO OVERTAKE"
-            
-        2021-12-12 14:31:01: 
-            Lap: 57,
-            Category: "Other",
-            Message: "LAPPED CARS 4 (NOR) - 14 - 31 - 16 - 5 TO OVERTAKE SAFETY CAR"
-            
-        2021-12-12 14:31:19"
-            Lap: 57,
-            Category: "SafetyCar",
-            Status: "IN THIS LAP",
-            Mode: "SAFETY CAR",
-            Message: "SAFETY CAR IN THIS LAP"
-```  
+
+>        2021-12-12 14:21:54:
+>            Lap: 53
+>            Category: "SafetyCar",
+>            Status: "DEPLOYED",
+>            Mode: "SAFETY CAR",
+>            Message: "SAFETY CAR DEPLOYED"
+>            
+>        2021-12-12 14:27:55:
+>            Lap: 56,
+>            Category: "Other",
+>            Message: "LAPPED CARS WILL NOT BE ALLOWED TO OVERTAKE"
+>            
+>        2021-12-12 14:31:01: 
+>            Lap: 57,
+>            Category: "Other",
+>            Message: "LAPPED CARS 4 (NOR) - 14 - 31 - 16 - 5 TO OVERTAKE SAFETY CAR"
+>            
+>        2021-12-12 14:31:19"
+>            Lap: 57,
+>            Category: "SafetyCar",
+>            Status: "IN THIS LAP",
+>            Mode: "SAFETY CAR",
+>            Message: "SAFETY CAR IN THIS LAP"
+
+
 The main talking point is change of the decision "LAPPED CARS WILL NOT BE ALLOWED TO OVERTAKE" to
 "LAPPED CARS 4 (NOR) - 14 - 31 - 16 - 5 TO OVERTAKE SAFETY CAR". The fact that only certain cars were allowed to overtake Safety Car seems to be another controversy, as well as the fact that the Safety Car was being withdrawn on same lap on which lapped cars passed the leader. That, according to protest filed by Mercedes is not compliant with the rules that states:
 ```
