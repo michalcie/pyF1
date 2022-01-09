@@ -6,6 +6,7 @@ from fastf1 import utils
 from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import Ellipse
+import matplotlib.ticker as mticker
 from scipy import interpolate
 import os
 import joypy
@@ -32,7 +33,6 @@ def crate_event(year, gp, session):
 
 
 def ridgeline(drivers_list, laps, title, xliml, xlimr, best_lap_number):
-
     def find_nearest(array, values):
         ### Description:
         ### input:
@@ -135,15 +135,21 @@ def overlay_drivers(driver_list, session):
     return fig, ax
 
 
-def overlay_highlight(ax, axes_counter, xlim, xlim2):
+def overlay_highlight(ax, axes_counter, xlim, xlim2, **kwargs):
     ### Description: plots a highlighted area on a graph
     ### input: xlim, xlim3: <'float'> - highlight limit
     ###         ax: <'Matplotlib Axes'>, axes_counter: <'int'>
     ### output: ax: <'Matplotlib Axes'>
+
+    if 'color' in kwargs:
+        color = kwargs['color']
+    else:
+        color = 'g'
+
     if axes_counter != -1:
-        ax[axes_counter].axvspan(xlim, xlim2, facecolor='g', alpha=0.5)
+        ax[axes_counter].axvspan(xlim, xlim2, facecolor=color, alpha=0.5)
     if axes_counter == -1:
-        ax.axvspan(xlim, xlim2, facecolor='g', alpha=0.5)
+        ax.axvspan(xlim, xlim2, facecolor=color, alpha=0.5)
     return ax
 
 
@@ -157,14 +163,59 @@ def overlay_laps(lap1, lap2, title, legl1, legl2, **kwargs):
     ### output:
     ###     matplotlib fig, ax
     ###     plt.show() needed to show graphs
+    major_base = 20
+    minor_base = 5
+
+
+    def timeTicksMajor(x, pos):
+        hours = int(x // 3600)
+        minutes = int((x % 3600) // 60)
+        seconds = int(x % 60)
+        if timeMode == 'Time':
+            return "{:02d}:{:02d}".format(minutes, seconds)
+        elif timeMode == 'SessionTime':
+            return "{:01d}:{:02d}:{:02d}".format(hours, minutes, seconds)
+        else:
+            return "{:01d}:{:02d}:{:02d}".format(hours, minutes, seconds)
+
+
+    def timeTicksMinor(x, pos):
+        hours = int(x // 3600)
+        minutes = int((x % 3600) // 60)
+        seconds = int(x % 60)
+
+        return ":{:02d}".format(seconds)
 
     def plot_overlay_axes(ax, axes_counter, lap, graph):
         ### Description: plots data given in 'graph' from 'lap' in 'ax' Axes
         ### input:
         ### output:
-        ax[axes_counter].plot(lap.telemetry['Distance'], lap.telemetry[graph],
-                              color=plotting.team_color(lap['Team']),
-                              label="".join((lap.Driver, ' ', str(lap.LapTime).split(':', 1)[1][:-3])))
+        nonlocal time_mode
+
+        if not time_mode:
+            ax[axes_counter].plot(lap.telemetry['Distance'], lap.telemetry[graph],
+                                  color=plotting.team_color(lap['Team']),
+                                  label="".join((lap.Driver, ' ', str(lap.LapTime).split(':', 1)[1][:-3])))
+        if time_mode:
+            if timeMode == 'Time' or timeMode == 'Session':
+                ax[axes_counter].plot(lap.telemetry[timeMode].dt.total_seconds(), lap.telemetry[graph],
+                                      color=plotting.team_color(lap['Team']),
+                                      label="".join((lap.Driver, ' ', str(lap.LapTime).split(':', 1)[1][:-3])))
+            elif timeMode == 'Date':
+                day = pd.Timestamp(year=lap.telemetry['Date'].iloc[0].year,
+                                   month=lap.telemetry['Date'].iloc[0].month,
+                                   day=lap.telemetry['Date'].iloc[0].day, hour=0, minute=0, second=0)
+                time_axis = (lap.telemetry['Date'] - day).dt.total_seconds()
+                ax[axes_counter].plot(time_axis, lap.telemetry[graph],
+                                      color=plotting.team_color(lap['Team']),
+                                      label="".join((lap.Driver, ' ', str(lap.LapTime).split(':', 1)[1][:-3])))
+
+            formatter_major = mticker.FuncFormatter(timeTicksMajor)
+            formatter_minor = mticker.FuncFormatter(timeTicksMinor)
+            ax[axes_counter].xaxis.set_major_formatter(formatter_major)
+            ax[axes_counter].xaxis.set_minor_formatter(formatter_minor)
+            ax[axes_counter].xaxis.set_major_locator(mticker.MultipleLocator(base=major_base))
+            ax[axes_counter].xaxis.set_minor_locator(mticker.MultipleLocator(base=minor_base))
         return ax
 
     def plot_overlay_axes_settings(ax, axes_counter, xlabel, ylabel, xlim, xlim2):
@@ -177,11 +228,38 @@ def overlay_laps(lap1, lap2, title, legl1, legl2, **kwargs):
         ax[axes_counter].grid(which='both', axis='both', linestyle='--', linewidth=0.5, color='#77773c')
 
         return ax
+
     # fig, ax = plt.subplots(len(kwargs['graph']))
     if 'start' in kwargs:
         start_distance = kwargs['start']
     else:
         start_distance = None
+
+    if 'mode' in kwargs:
+
+        if kwargs['mode'] == 'time':
+            time_mode = True
+        else:
+            time_mode = False
+
+        if 'timeMode' in kwargs:
+            if kwargs['timeMode'] == 'Time':
+                timeMode = 'Time'
+
+            elif kwargs['timeMode'] == 'SessionTime':
+                timeMode = 'SessionTime'
+
+            elif kwargs['timeMode'] == 'Date':
+                timeMode = 'Date'
+
+            else:
+                timeMode = 'Time'
+
+        else:
+            timeMode = 'Time'
+
+    else:
+        time_mode = False
 
     if 'end' in kwargs:
         end_distance = kwargs['end']
@@ -220,8 +298,28 @@ def overlay_laps(lap1, lap2, title, legl1, legl2, **kwargs):
 
         if 'delta' in kwargs['graph']:
             delta, ref_tel, dump2 = utils.delta_time(lap2, lap1)
-            ax[axes_counter].plot(ref_tel['Distance'], delta,
-                                  '--', color=plotting.team_color(lap1['Team']))
+
+            if not time_mode:
+                ax[axes_counter].plot(ref_tel['Distance'], delta,
+                                      '--', color=plotting.team_color(lap1['Team']))
+            elif time_mode:
+                if timeMode == 'Time' or timeMode == 'SessionTime':
+                    ax[axes_counter].plot(ref_tel[timeMode].dt.total_seconds(), delta,
+                                          '--', color=plotting.team_color(lap1['Team']))
+
+                elif timeMode == 'Date':
+                    day = pd.Timestamp(year=ref_tel['Date'].iloc[0].year,
+                                       month=ref_tel['Date'].iloc[0].month,
+                                       day=ref_tel['Date'].iloc[0].day, hour=0, minute=0, second=0)
+                    time_axis = (ref_tel['Date'] - day).dt.total_seconds()
+                    ax[axes_counter].plot(time_axis, delta,
+                                          '--', color=plotting.team_color(lap1['Team']))
+                formatter_major = mticker.FuncFormatter(timeTicksMajor)
+                formatter_minor = mticker.FuncFormatter(timeTicksMinor)
+                ax[axes_counter].xaxis.set_major_formatter(formatter_major)
+                ax[axes_counter].xaxis.set_minor_formatter(formatter_minor)
+                ax[axes_counter].xaxis.set_major_locator(mticker.MultipleLocator(base=major_base))
+                ax[axes_counter].xaxis.set_minor_locator(mticker.MultipleLocator(base=minor_base))
 
             ax = plot_overlay_axes_settings(ax, axes_counter, 'Lap Distance [m]',
                                             "".join(('Relative time delta\n(', lap1.Driver,
@@ -253,6 +351,7 @@ def overlay_laps(lap1, lap2, title, legl1, legl2, **kwargs):
             ax = overlay_highlight(ax, axes_counter, highlight_start, highlight_end)
             axes_counter = axes_counter + 1
 
+        # Not maintained since 0.3.1
         if 'longAcc' in kwargs['graph']:
             Y = lap1.get_telemetry()['Speed'].diff() / 3.6 / lap1.get_telemetry()['Time'].dt.total_seconds().diff()
             ax[axes_counter].plot(lap1.get_telemetry()['Distance'], (Y / 9.81).rolling(5, min_periods=1).mean(),
@@ -480,7 +579,15 @@ def overlay_map_multi(driver_list, session, **kwargs):
     sectors = 100
     sector_point = np.ceil(1100 / sectors)
 
-    drvs = data_list(driver_list, session, 'fastest')
+    if 'mode' in kwargs:
+        if kwargs['mode'] == 'manual':
+            drvs = driver_list
+        else:
+            drvs = data_list(driver_list, session, 'fastest')
+    else:
+        drvs = data_list(driver_list, session, 'fastest')
+
+
     idx = index_multi(drvs)
     splines = multi_spline(drvs, idx)
     track_length = max(
@@ -763,7 +870,6 @@ def track_status(drv_lap, type, ax, text_posy, text_ang):
 
 
 def season_total_time(drvs_list, event_list):
-
     def calculate_from_telemetry(laps):
         time_cumsum = laps['LapTime'].fillna(laps['Time'] - laps['LapStartTime']).cumsum()
         return time_cumsum.iloc[-1]
